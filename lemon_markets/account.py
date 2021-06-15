@@ -1,7 +1,7 @@
 import time
 
-from config import DEFAULT_AUTH_API_URL
-from helpers.request import ApiRequest
+from lemon_markets.config import DEFAULT_AUTH_API_URL
+from lemon_markets.helpers.request import ApiRequest
 
 
 class Account():
