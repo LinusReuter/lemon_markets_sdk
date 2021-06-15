@@ -4,7 +4,7 @@ from typing import Union
 
 import requests
 
-from errors import BaseError
+from lemon_markets.helpers.errors import BaseError
 
 
 class ApiResponseError(BaseError):
