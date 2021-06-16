@@ -2,7 +2,7 @@ import datetime
 
 
 class ApiObject:
-    class RespondVariables:
+    class Values:
         pass
 
     class BodyVariables:
@@ -22,13 +22,14 @@ class ApiObject:
                 continue
         return body
 
-    def _set_data(self, data: dict):
+    def _update_values(self, data: dict):
         for key, value in data.items():
             if type(value) == dict:
-                self._set_data(value)
-            if key in self.RespondVariables.__dict__:
-                if key in self.RespondVariables.__annotations__:
-                    attr_type = self.RespondVariables.__annotations__.get(key)
+                if key in self.Values.__dict__:
+                    setattr(self.Values, key, value)
+            if key in self.Values.__dict__:
+                if key in self.Values.__annotations__:
+                    attr_type = self.Values.__annotations__.get(key)
                     new_value = attr_type(value)
-                    setattr(self.RespondVariables, key, new_value)
+                    setattr(self.Values, key, new_value)
 
