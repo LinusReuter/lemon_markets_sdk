@@ -14,20 +14,29 @@ class Space(ApiObject):
         type: str = None
         state: dict = None
 
-    def __init__(self, account: Account, uuid: str, name: str, type: str, state: dict):
+    def __init__(self, account: Account, data: dict):
         self._account = account
-        self.Values.uuid = uuid
-        self.Values.name = name
-        self.Values.type = type
-        self.Values.state = state
+        self._update_values(data)
+        self._update_url()
 
     def _update_url(self):
-        self._url = DEFAULT_PAPER_REST_API_URL + "spaces/{" + self.Values.uuid + "}/"
+        self._url = DEFAULT_PAPER_REST_API_URL + f"spaces/{self.Values.uuid}/"
 
     def _update_space_state(self):
-        self._update_url()
         request = ApiRequest(url=self._url, method="GET", headers=self._account.authorization)
         self._update_values(request.response)
+
+    @property
+    def uuid(self):
+        return self.Values.uuid
+
+    @property
+    def name(self):
+        return self.Values.name
+
+    @property
+    def type(self):
+        return self.Values.type
 
     @property
     def state(self):
