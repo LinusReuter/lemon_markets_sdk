@@ -1,10 +1,10 @@
 import time
 
 from lemon_markets.config import DEFAULT_AUTH_API_URL
-from lemon_markets.helpers.request import ApiRequest
+from lemon_markets.helpers.requests import ApiRequest
 
 
-class Account():
+class Account:
     _client_ID: str
     _client_secret: str
 
@@ -12,8 +12,8 @@ class Account():
     _access_token_type: str
     _access_token_expires: int
 
-    def __init__(self, client_ID, client_secret):
-        self._client_ID = client_ID
+    def __init__(self, client_id, client_secret):
+        self._client_ID = client_id
         self._client_secret = client_secret
 
     def request_access_token(self):
@@ -40,6 +40,10 @@ class Account():
         return self._access_token_type
 
     @property
-    def header(self):
-        s = self.access_token_type + " " + self.access_token
+    def authorization(self):
+        if self._access_token_type == "bearer":
+            s = "Bearer " + self.access_token
+        else:
+            print("Error: unknown token type")
+
         return {"Authorization": s}
