@@ -52,7 +52,7 @@ class Instrument(ApiObject):
     def tradable(self):
         return self.Values.tradable
 
-    @property
+    @property #debug property propaply deleted when problems are Solved
     def all(self):
         return self.Values.__dict__
 
