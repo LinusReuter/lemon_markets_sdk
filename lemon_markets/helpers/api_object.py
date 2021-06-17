@@ -5,13 +5,13 @@ class ApiObject:
     class Values:
         pass
 
-    class BodyVariables:
+    class ParamVariables:
         pass
 
-    def _build_body(self) -> dict:
+    def _build_params(self) -> dict:
         primitive_types = (float, int, str, bool)
         body = {}
-        for attribute, value in self.BodyVariables.__dict__.items():
+        for attribute, value in self.ParamVariables.__dict__.items():
             if not value:
                 continue
             if attribute == "__module__":

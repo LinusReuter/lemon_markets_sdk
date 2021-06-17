@@ -62,7 +62,7 @@ class ListInstruments(ApiObject):
     _account: Account
     instruments: [Instrument] = []
 
-    class BodyVariables(ApiObject.BodyVariables):
+    class ParamVariables(ApiObject.ParamVariables):
         tradable: bool
         search: str
         currency: str
@@ -73,17 +73,15 @@ class ListInstruments(ApiObject):
     def __init__(self, account: Account, tradable: bool = None, search: str = None, currency: str = None,
                  type: str = None, limit: int = None, offset: int = None):
         self._account = account
-        self.BodyVariables.tradable = tradable
-        self.BodyVariables.search = search
-        self.BodyVariables.currency = currency
-        self.BodyVariables.type = type
-        self.BodyVariables.limit = limit
-        self.BodyVariables.offset = offset
+        self.ParamVariables.tradable = tradable
+        self.ParamVariables.search = search
+        self.ParamVariables.currency = currency
+        self.ParamVariables.type = type
+        self.ParamVariables.limit = limit
+        self.ParamVariables.offset = offset
 
-        body = self._build_body()
-        #BUG: Request dont react accorting to body parms!!!
-        request = ApiRequest(url=self._url, method="GET", body=body, headers=self._account.authorization)
-        print(request.response) #debug purpose
+        params = self._build_params()
+        request = ApiRequest(url=self._url, method="GET", params=params, headers=self._account.authorization)
         results = request.response["results"]
         for instrument in results:
             self.instruments.append(Instrument(instrument)) #BUG: Overwrites all previeues Elements with the new Element

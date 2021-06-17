@@ -49,12 +49,13 @@ class ApiRequest:
     url_params: dict = None
     _response: ApiResponse
 
-    def __init__(self, url: str, method: str = "GET", body: dict = None,
+    def __init__(self, url: str, method: str = "GET", body: dict = None, params: dict = None,
                  headers: dict = None):
         self.url = url
         self.method = method.lower()
         self.body = body
         self.headers = headers
+        self.url_params = params
 
         self._perform_request()
 

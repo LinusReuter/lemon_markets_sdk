@@ -14,7 +14,7 @@ class State(ApiObject):
         state: dict = None
         spaces: [Space] = []
 
-    class BodyVariables(ApiObject.BodyVariables):
+    class ParamVariables(ApiObject.ParamVariables):
         limit: int
         offset: int
 
@@ -22,14 +22,14 @@ class State(ApiObject):
         self._account = account
 
     def request(self, type_of_request: str, limit: int = None, offset: int = None):
-        self.BodyVariables.limit = limit
-        self.BodyVariables.offset = offset
-        body = self._build_body()
+        self.ParamVariables.limit = limit
+        self.ParamVariables.offset = offset
+        params = self._build_params()
         if type_of_request == "state":
             url = self._url_state
         else:
             url = self._url_spaces
-        request = ApiRequest(url=url, method="GET", body=body, headers=self._account.authorization)
+        request = ApiRequest(url=url, method="GET", params=params, headers=self._account.authorization)
         if type_of_request == "state":
             self._update_values(request.response)
         else:
