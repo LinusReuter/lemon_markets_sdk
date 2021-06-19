@@ -26,6 +26,8 @@ class ApiObject:
 
     def _update_values(self, data: dict):
         for key, value in data.items():
+            if not value:
+                continue
             if type(value) in [dict, list]:
                 if key in self.Values.__dict__:
                     setattr(self.Values, key, value)
@@ -34,5 +36,7 @@ class ApiObject:
                     attr_type = self.Values.__annotations__.get(key)
                     new_value = attr_type(value)
                     setattr(self.Values, key, new_value)
+                else:
+                    setattr(self.Values, key, value)
         return self
 
