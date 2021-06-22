@@ -18,21 +18,22 @@ class ApiClient:
 
         # Keep requesting until there are no more pages
         offset = None
-        count = None
+        next = None
         results = []
         while True:
+            offset = next
             page_params = params.copy()
             if offset is not None:
                 page_params['offset'] = offset
             data = self._request(endpoint, data=data, params=page_params)
-
-            if count is None:
-                count = data['count']
+            print(data)
 
             results += data['results']
 
-            if data['next'] is None or len(results) >= count:
+            if data['next'] is None or data['next'] <= offset:
                 break
+            else:
+                next = data['next']
 
         return results
 

@@ -7,19 +7,23 @@ from typing import *
 
 
 class InstrumentType(Enum):
-    STOCKS = 'stocks'
-    BONDS = 'bonds'
-    FUNDS = 'fonds'
-    WARRANTS = 'warrants'
+    STOCK = 'stock'
+    BOND = 'bond'
+    FOND = 'fond'
+    WARRANT = 'warrant'
 
 
 @dataclass()
 class Instrument:
     isin: str = None
     wkn: str = None
+    name: str = None
     title: str = None
     type: str = None
     symbol: str = None
+    currency: str = None
+    tradable: str = None
+    trading_venues: list = None
 
     @classmethod
     def from_response(cls, data: dict):
@@ -31,9 +35,13 @@ class Instrument:
         return cls(
             isin=data.get('isin'),
             wkn=data.get('wkn'),
+            name=data.get('name'),
             title=data.get('title'),
             type=type_,
             symbol=data.get('symbol'),
+            currency=data.get('currency'),
+            tradable=data.get('tradable'),
+            trading_venues=data.get('trading_venues')
         )
 
 
