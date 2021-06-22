@@ -1,91 +1,94 @@
 import datetime
-from typing import Union
+from enum import Enum
+from dataclasses import dataclass
 
-from lemon_markets.config import DEFAULT_PAPER_REST_API_URL
+from lemon_markets.helpers.api_client import ApiClient
 from lemon_markets.account import Account
 from lemon_markets.paper_money.instrument import Instrument
+from lemon_markets.paper_money.space import Space
 
 
-class Order(ApiObject):
-    _url = DEFAULT_PAPER_REST_API_URL + "orders/"
+class OrderStatus(Enum):
+    INACTIVE = 'inactive'
+    ACTIVE = 'active'
+    IN_PROGRESS = 'in_progress'
+    EXECUTED = 'executed'
+    DELETED = 'deleted'
+    EXPIRED = 'expired'
 
-    class Values(ApiObject.Values):
-        account: Account = None
-        instrument: Instrument = None
-        quantity: int = None
-        valid_until: datetime.datetime = None
-        created_at: datetime.datetime = None
-        processed_at: datetime.datetime = None
-        processed_quantity: int = None
-        average_price: str = None
-        limit_price: float = None
-        stop_price: float = None
-        type: str = None
-        side: str = None
-        uuid: str = None
-        status: str = None
 
-    def __init__(self,
-                 account: Account = None,
-                 instrument: Instrument = None,
-                 quantity: int = None,
-                 valid_until: Union[float, int, datetime.datetime] = None,
-                 limit_price: float = None,
-                 stop_price: float = None,
-                 type: str = None,
-                 side: str = None,
-                 uuid: str = None,
-                 ):
-        self._update_values(locals())
+@dataclass()
+class Order:
+    instrument: Instrument = None
+    quantity: int = None
+    valid_until: datetime.datetime = None
+    created_at: datetime.datetime = None
+    processed_at: datetime.datetime = None
+    processed_quantity: int = None
+    average_price: str = None
+    limit_price: float = None
+    stop_price: float = None
+    type: str = None
+    side: str = None
+    uuid: str = None
+    status: str = None
+    trading_venue: dict = None
 
-    @property
-    def instrument(self):
-        return self.Values.instrument
+    @classmethod
+    def from_response(cls, instrument: Instrument, data: dict):
+        try:
+            status_ = OrderStatus(data.get('status'))
+        except (ValueError, KeyError):
+            raise ValueError('Unexpected instrument type: %r' % data.get('type'))
 
-    @property
-    def quantity(self):
-        return self.Values.quantity
+        return cls(
+            instrument=instrument,
+            quantity=data.get('quantity'),
+            valid_until=data.get('valid_until'),
+            side=data.get('side'),
+            stop_price=data.get('stop_price'),
+            limit_price=data.get('limit_price'),
+            uuid=data.get('uuid'),
+            status=status_,
+            trading_venue=data.get('trading_venue')
+        )
 
-    @property
-    def valid_until(self):
-        return self.Values.valid_until
+    def activate(self):
+        pass
 
-    @property
-    def created_at(self):
-        return self.Values.created_at
+    def update(self):
+        pass
 
-    @property
-    def processed_at(self):
-        return self.Values.processed_at
+    def delete(self):
+        pass
 
-    @property
-    def processed_quantity(self):
-        return self.Values.processed_quantity
 
-    @property
-    def average_price(self):
-        return self.Values.average_price
+class Orders(ApiClient):
+    _space: Space
+    orders = {}  # Structures all orders in a dict containing a list of orders for each last known order status.
 
-    @property
-    def limit_price(self):
-        return self.Values.limit_price
+    def __init__(self, account: Account, space: Space):
+        self._space = space
+        super().__init__(account=account)
+        for status in OrderStatus:
+            self.orders[status.name] = []
 
-    @property
-    def stop_price(self):
-        return self.Values.stop_price
+    def create_order(self):
+        pass
 
-    @property
-    def type(self):
-        return self.Values.type
+    def update_order(self, order: Order):
+        pass
 
-    @property
-    def side(self):
-        return self.Values.side
+    def activate_order(self, order: Order):
+        pass
 
-    @property
-    def uuid(self):
-        return self.Values.uuid
+    def delete_order(self, order: Order):
+        pass
 
-    @property
-    def status(self):
-        return self.Values.status
+    #requests all orders matching the paramerts and adds them to the orders dict
+    def get_orders(self, created_at_until=None, created_at_from=None, side: str = None, type: str = None,
+                   status: str = None):
+        pass
+
+    def clean_orders(self):  # remove all executed, deleted or expired orders in the orders dict
+        pass
