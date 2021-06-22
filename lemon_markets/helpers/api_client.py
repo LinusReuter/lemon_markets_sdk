@@ -26,7 +26,6 @@ class ApiClient:
             if offset is not None:
                 page_params['offset'] = offset
             data = self._request(endpoint, data=data, params=page_params)
-            print(data)
 
             results += data['results']
 
