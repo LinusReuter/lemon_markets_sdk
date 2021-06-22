@@ -1,7 +1,8 @@
 import time
+import requests
+import json
 
 from lemon_markets.config import DEFAULT_AUTH_API_URL
-from lemon_markets.helpers.requests import ApiRequest
 
 
 class Account:
@@ -17,13 +18,17 @@ class Account:
         self._client_secret = client_secret
 
     def request_access_token(self):
-        body = {"client_id": self._client_ID,
+        data = {"client_id": self._client_ID,
                 "client_secret": self._client_secret,
                 "grant_type": "client_credentials"}
-        request = ApiRequest(url=DEFAULT_AUTH_API_URL, method="POST", body=body)
-        self._access_token = request.response.get("access_token")
-        self._access_token_type = request.response.get("token_type")
-        self._access_token_expires = int(time.time()) + request.response.get("expires_in") - 60
+        response = requests.post(url=DEFAULT_AUTH_API_URL, data=data)
+        response.raise_for_status()
+
+        data = json.loads(response.content)
+
+        self._access_token = data.get("access_token")
+        self._access_token_type = data.get("token_type")
+        self._access_token_expires = int(time.time()) + data.get("expires_in") - 60
 
     @property
     def access_token(self):
@@ -44,6 +49,6 @@ class Account:
         if self._access_token_type == "bearer":
             s = "Bearer " + self.access_token
         else:
-            print("Error: unknown token type")
+            raise Exception("Error: unknown token type")
 
         return {"Authorization": s}

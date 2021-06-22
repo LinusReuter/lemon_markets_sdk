@@ -8,7 +8,7 @@ from lemon_markets.config import DEFAULT_PAPER_REST_API_URL
 
 class ApiClient:
 
-    def __init__(self, account: Account, endpoint: str = None):
+    def __init__(self, account: Account = None, endpoint: str = None):
         self._account = account
         self._endpoint = endpoint or DEFAULT_PAPER_REST_API_URL
 
