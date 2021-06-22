@@ -1,56 +1,68 @@
-from lemon_markets.helpers.requests import ApiRequest
-from lemon_markets.config import DEFAULT_PAPER_REST_API_URL
-from lemon_markets.helpers.api_object import ApiObject
+from lemon_markets.helpers.api_client import ApiClient
 from lemon_markets.account import Account
 
+from enum import Enum
+from dataclasses import dataclass
 
-class Space(ApiObject):
-    _url: str = None
-    _account: Account
 
-    class Values(ApiObject.Values):
-        uuid: str = None
-        name: str = None
-        type: str = None
-        state: dict = None
+class SpaceType(Enum):
+    STRATEGY = 'strategy'
+    APP = 'app'
 
-    def __init__(self, account: Account, data: dict):
-        self._account = account
-        self._update_values(data)
-        self._update_url()
 
-    def _update_url(self):
-        self._url = DEFAULT_PAPER_REST_API_URL + f"spaces/{self.Values.uuid}/"
+@dataclass
+class Space(ApiClient):
+    uuid: str = None
+    name: str = None
+    type: str = None
+    _state: dict = None
+
+    _account: Account = None
+
+    @classmethod
+    def from_response(cls, account: Account, data: dict):
+        try:
+            type_ = SpaceType(data.get('type'))
+        except (ValueError, KeyError):
+            raise ValueError('Unexpected space type: %r' % data.get('type'))
+
+        return cls(
+            uuid=data.get('uuid'),
+            name=data.get('name'),
+            _state=data.get('state'),
+            type=type_,
+            _account=account
+        )
+
+    def update_values(self, data: dict):
+        try:
+            type_ = SpaceType(data.get('type'))
+        except (ValueError, KeyError):
+            raise ValueError('Unexpected space type: %r' % data.get('type'))
+
+        self.uuid = data.get('uuid')
+        self.name = data.get('name')
+        self._state = data.get('state')
+        self.type = type_
+
+    def __post_init__(self):
+        super().__init__(account=self._account)
 
     def _update_space_state(self):
-        request = ApiRequest(url=self._url, method="GET", headers=self._account.authorization)
-        self._update_values(request.response)
-
-    @property
-    def uuid(self):
-        return self.Values.uuid
-
-    @property
-    def name(self):
-        return self.Values.name
-
-    @property
-    def type(self):
-        return self.Values.type
+        data = self._request(f"spaces/{self.uuid}/")
+        self.update_values(data)
 
     @property
     def state(self):
         self._update_space_state()
-        return self.Values.state
+        return self._state
 
     @property
     def balance(self):
         self._update_space_state()
-        return self.Values.state.get("balance")
+        return float(self._state.get("balance"))
 
     @property
     def cash_to_invest(self):
         self._update_space_state()
-        return self.Values.state.get("cash_to_invest")
-
-
+        return float(self._state.get("cash_to_invest"))

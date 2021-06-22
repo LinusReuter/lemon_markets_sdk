@@ -1,57 +1,39 @@
-from lemon_markets.helpers.requests import ApiRequest
-from lemon_markets.config import DEFAULT_PAPER_REST_API_URL
-from lemon_markets.helpers.api_object import ApiObject
+from lemon_markets.helpers.api_client import ApiClient
 from lemon_markets.account import Account
 from lemon_markets.paper_money.space import Space
 
 
-class State(ApiObject):
-    _url_state = DEFAULT_PAPER_REST_API_URL + "state/"
-    _url_spaces = DEFAULT_PAPER_REST_API_URL + "spaces/"
-    _account: Account
-
-    class Values(ApiObject.Values):
-        state: dict = None
-        spaces: [Space] = []
-
-    class ParamVariables(ApiObject.ParamVariables):
-        limit: int
-        offset: int
+class State(ApiClient):
+    _state: dict = None
+    _balance: float = None
+    _spaces: [Space] = None
 
     def __init__(self, account: Account):
-        self._account = account
+        super().__init__(account)
 
-    def request(self, type_of_request: str, limit: int = None, offset: int = None):
-        self.ParamVariables.limit = limit
-        self.ParamVariables.offset = offset
-        params = self._build_params()
-        if type_of_request == "state":
-            url = self._url_state
-        else:
-            url = self._url_spaces
-        request = ApiRequest(url=url, method="GET", params=params, headers=self._account.authorization)
-        if type_of_request == "state":
-            self._update_values(request.response)
-        else:
-            self.Values.spaces = []
-            results = request.response["results"]
-            for s in results:
-                self.Values.spaces.append(Space(self._account, s))
+    def get_state(self):
+        data = self._request(endpoint='state/')
+        try:
+            self._balance = float(data.get('balance'))
+            self._state = data
+        except Exception:
+            raise Exception
+
+    def get_spaces(self):
+        data_rows = self._request_paged('spaces/')
+        self._spaces = [Space.from_response(self._account, data) for data in data_rows]
 
     @property
-    def state(self, limit: int = None, offset: int = None):
-        self.request("state", limit, offset)
-        return self.Values.state
+    def balance(self):
+        self.get_state()
+        return self._balance
 
     @property
-    def balance(self, limit: int = None, offset: int = None):
-        self.request("state", limit, offset)
-        return self.Values.state.get("balance")
+    def state(self):
+        self.get_state()
+        return self._state
 
     @property
-    def spaces(self, limit: int = None, offset: int = None):
-        self.request("spaces", limit, offset)
-        return self.Values.spaces
-
-
-
+    def spaces(self):
+        self.get_spaces()
+        return self._spaces

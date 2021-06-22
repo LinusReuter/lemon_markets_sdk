@@ -1,87 +1,61 @@
-from lemon_markets.helpers.api_object import ApiObject
-from lemon_markets.helpers.requests import ApiRequest
+from lemon_markets.helpers.api_client import ApiClient
 from lemon_markets.account import Account
-from lemon_markets.config import DEFAULT_PAPER_REST_API_URL
+
+from enum import Enum
+from dataclasses import dataclass
+from typing import *
 
 
-class Instrument(ApiObject):
-
-    class Values(ApiObject.Values):
-        isin: str = None
-        wkn: str = None
-        name: str = None
-        title: str = None
-        symbol: str = None
-        type: str = None
-        currency: str = None
-        tradable: bool = None
-        trading_venues: list = None
-
-    def __init__(self, data: dict):
-        self._update_values(data)
-
-    @property
-    def isin(self):
-        return self.Values.isin
-
-    @property
-    def wkn(self):
-        return self.Values.wkn
-
-    @property
-    def name(self):
-        return self.Values.name
-
-    @property
-    def title(self):
-        return self.Values.title
-
-    @property
-    def symbol(self):
-        return self.Values.symbol
-
-    @property
-    def type(self):
-        return self.Values.type
-
-    @property
-    def currency(self):
-        return self.Values.currency
-
-    @property
-    def tradable(self):
-        return self.Values.tradable
-
-    @property #debug property propaply deleted when problems are Solved
-    def all(self):
-        return self.Values.__dict__
+class InstrumentType(Enum):
+    STOCKS = 'stocks'
+    BONDS = 'bonds'
+    FUNDS = 'fonds'
+    WARRANTS = 'warrants'
 
 
-class ListInstruments(ApiObject):
-    _url = DEFAULT_PAPER_REST_API_URL + "instruments/"
-    _account: Account
-    instruments: [Instrument] = []
+@dataclass()
+class Instrument:
+    isin: str = None
+    wkn: str = None
+    title: str = None
+    type: str = None
+    symbol: str = None
 
-    class ParamVariables(ApiObject.ParamVariables):
-        tradable: bool
-        search: str
-        currency: str
-        type: str
-        limit: int
-        offset: int
+    @classmethod
+    def from_response(cls, data: dict):
+        try:
+            type_ = InstrumentType(data.get('type'))
+        except (ValueError, KeyError):
+            raise ValueError('Unexpected instrument type: %r' % data.get('type'))
 
-    def __init__(self, account: Account, tradable: bool = None, search: str = None, currency: str = None,
-                 type: str = None, limit: int = None, offset: int = None):
-        self._account = account
-        self.ParamVariables.tradable = tradable
-        self.ParamVariables.search = search
-        self.ParamVariables.currency = currency
-        self.ParamVariables.type = type
-        self.ParamVariables.limit = limit
-        self.ParamVariables.offset = offset
+        return cls(
+            isin=data.get('isin'),
+            wkn=data.get('wkn'),
+            title=data.get('title'),
+            type=type_,
+            symbol=data.get('symbol'),
+        )
 
-        params = self._build_params()
-        request = ApiRequest(url=self._url, method="GET", params=params, headers=self._account.authorization)
-        results = request.response["results"]
-        for instrument in results:
-            self.instruments.append(Instrument(instrument)) #BUG: Overwrites all previeues Elements with the new Element
+
+class Instruments(ApiClient):
+
+    def __init__(self, account: Account):
+        super().__init__(account=account)
+
+    def list_instruments(self, tradable: bool = None, search: str = None, currency: str = None, type_: InstrumentType = None) -> List[Instrument]:
+        params = {}
+        if tradable is not None:
+            params['tradable'] = tradable
+        if search is not None:
+            params['search'] = search
+        if currency is not None:
+            params['currency'] = currency
+        if type_ is not None:
+            params['type'] = type_.value
+
+        data_rows = self._request_paged('instruments/', params=params)
+        return [Instrument.from_response(data) for data in data_rows]
+
+    def get_instrument(self, isin: str) -> Instrument:
+        data = self._request('instruments/'+isin+'/')
+        return Instrument.from_response(data)

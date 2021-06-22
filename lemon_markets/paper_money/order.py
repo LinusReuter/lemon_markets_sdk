@@ -1,9 +1,7 @@
 import datetime
 from typing import Union
 
-from lemon_markets.helpers.requests import ApiRequest
 from lemon_markets.config import DEFAULT_PAPER_REST_API_URL
-from lemon_markets.helpers.api_object import ApiObject
 from lemon_markets.account import Account
 from lemon_markets.paper_money.instrument import Instrument
 
