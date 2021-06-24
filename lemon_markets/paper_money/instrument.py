@@ -50,7 +50,7 @@ class Instruments(ApiClient):
     def __init__(self, account: Account):
         super().__init__(account=account)
 
-    def list_instruments(self, tradable: bool = None, search: str = None, currency: str = None, type_: InstrumentType = None) -> List[Instrument]:
+    def list_instruments(self, tradable: bool = None, search: str = None, currency: str = None, type: InstrumentType = None) -> List[Instrument]:
         params = {}
         if tradable is not None:
             params['tradable'] = tradable
@@ -58,8 +58,8 @@ class Instruments(ApiClient):
             params['search'] = search
         if currency is not None:
             params['currency'] = currency
-        if type_ is not None:
-            params['type'] = type_.value
+        if type is not None:
+            params['type'] = type.value
 
         data_rows = self._request_paged('instruments/', params=params)
         return [Instrument.from_response(data) for data in data_rows]
