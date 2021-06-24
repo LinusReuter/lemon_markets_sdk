@@ -1,6 +1,7 @@
 import datetime
 from enum import Enum
 from dataclasses import dataclass
+from typing import *
 
 from lemon_markets.helpers.api_client import ApiClient
 from lemon_markets.account import Account
@@ -31,7 +32,7 @@ class Order:
     type: str = None
     side: str = None
     uuid: str = None
-    status: str = None
+    status: OrderStatus = None
     trading_venue: dict = None
 
     @classmethod
@@ -56,7 +57,7 @@ class Order:
     def activate(self):
         pass
 
-    def update(self):
+    def update(self, data: dict):
         pass
 
     def delete(self):
@@ -65,19 +66,39 @@ class Order:
 
 class Orders(ApiClient):
     _space: Space
-    orders = {}  # Structures all orders in a dict containing a list of orders for each last known order status.
+    orders = {}  # Structures all orders in a dict containing a dict (the index is the uuid) of orders for each last known order status.
 
     def __init__(self, account: Account, space: Space):
         self._space = space
         super().__init__(account=account)
         for status in OrderStatus:
-            self.orders[status.name] = []
+            self.orders[status.name] = {}
 
-    def create_order(self):
+    def create_order(self, instrument: Instrument, valid_until: int, side: str, quantity: int,
+                     stop_price: Union[int, float] = None, limit_price: Union[int, float] = None):
+        endpoint = f"/spaces/{self._space.uuid}/orders/"
+        params = {"isin": instrument.isin, "valid_until": valid_until, "side": side, "quantity": quantity}
+        if stop_price is not None:
+            params['stop_price'] = stop_price
+        if limit_price is not None:
+            params['limit_price'] = limit_price
+
+        data = self._request(endpoint=endpoint, method="POST", params=params)
+        order = Order.from_response(instrument, data)
+        status = order.status
+        self.orders[status].update({order.uuid: order})
         pass
 
     def update_order(self, order: Order):
-        pass
+        endpoint = f"/spaces/{self._space.uuid}/orders/{order.uuid}/"
+        old_status = order.status
+        self.orders[old_status].pop(order.uuid)
+        data = self._request(endpoint=endpoint, method="GET")
+        order.update(data)
+        new_status = order.status
+        self.orders[new_status].update({order.uuid: order})
+        status_changed = (old_status != new_status)
+        return status_changed, new_status
 
     def activate_order(self, order: Order):
         pass
