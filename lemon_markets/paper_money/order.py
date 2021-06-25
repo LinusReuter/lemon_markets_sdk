@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from enum import Enum
 from dataclasses import dataclass
 from typing import *
@@ -7,6 +7,7 @@ from lemon_markets.helpers.api_client import ApiClient
 from lemon_markets.account import Account
 from lemon_markets.paper_money.instrument import Instrument
 from lemon_markets.paper_money.space import Space
+from lemon_markets.helpers.time_helper import *
 
 
 class OrderStatus(Enum):
@@ -22,9 +23,9 @@ class OrderStatus(Enum):
 class Order:
     instrument: Instrument = None
     quantity: int = None
-    valid_until: datetime.datetime = None
-    created_at: datetime.datetime = None
-    processed_at: datetime.datetime = None
+    valid_until: datetime = None
+    created_at: datetime = None
+    processed_at: datetime = None
     processed_quantity: int = None
     average_price: str = None
     limit_price: float = None
@@ -45,7 +46,7 @@ class Order:
         return cls(
             instrument=instrument,
             quantity=data.get('quantity'),
-            valid_until=data.get('valid_until'),
+            valid_until=timestamp_to_datetime(data.get('valid_until')),
             side=data.get('side'),
             stop_price=data.get('stop_price'),
             limit_price=data.get('limit_price'),
@@ -74,10 +75,16 @@ class Orders(ApiClient):
         for status in OrderStatus:
             self.orders[status.name] = {}
 
-    def create_order(self, instrument: Instrument, valid_until: int, side: str, quantity: int,
-                     stop_price: Union[int, float] = None, limit_price: Union[int, float] = None):
+    def create_order(self,
+                     instrument: Instrument,
+                     valid_until: datetime,
+                     side: str,
+                     quantity: int,
+                     stop_price: Union[int, float] = None,
+                     limit_price: Union[int, float] = None):
         endpoint = f"/spaces/{self._space.uuid}/orders/"
-        params = {"isin": instrument.isin, "valid_until": valid_until, "side": side, "quantity": quantity}
+        params = {"isin": instrument.isin, "valid_until": datetime_to_timestamp(valid_until),
+                  "side": side, "quantity": quantity}
         if stop_price is not None:
             params['stop_price'] = stop_price
         if limit_price is not None:
@@ -107,7 +114,11 @@ class Orders(ApiClient):
         pass
 
     #requests all orders matching the paramerts and adds them to the orders dict
-    def get_orders(self, created_at_until=None, created_at_from=None, side: str = None, type: str = None,
+    def get_orders(self,
+                   created_at_until: datetime = None,
+                   created_at_from: datetime = None,
+                   side: str = None,
+                   type: str = None,
                    status: str = None):
         pass
 
