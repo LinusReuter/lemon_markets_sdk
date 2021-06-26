@@ -5,7 +5,7 @@ from typing import *
 
 from lemon_markets.helpers.api_client import ApiClient
 from lemon_markets.account import Account
-from lemon_markets.paper_money.instrument import Instrument
+from lemon_markets.paper_money.instrument import Instrument, Instruments
 from lemon_markets.paper_money.space import Space
 from lemon_markets.helpers.time_helper import *
 
@@ -55,10 +55,22 @@ class Order:
             trading_venue=data.get('trading_venue')
         )
 
+    def update_data(self, data: dict):
+        try:
+            status_ = OrderStatus(data.get('status'))
+        except (ValueError, KeyError):
+            raise ValueError('Unexpected instrument type: %r' % data.get('type'))
+        self.status = status_
+        self.average_price = data.get('average_price')
+        self.created_at = data.get('created_at')
+        self.type = data.get('type')
+        self.processed_at = data.get('processed_at')
+        self.processed_quantity = data.get('processed_quantity')
+
     def activate(self):
         pass
 
-    def update(self, data: dict):
+    def update(self):
         pass
 
     def delete(self):
@@ -82,36 +94,46 @@ class Orders(ApiClient):
                      quantity: int,
                      stop_price: Union[int, float] = None,
                      limit_price: Union[int, float] = None):
-        endpoint = f"/spaces/{self._space.uuid}/orders/"
-        params = {"isin": instrument.isin, "valid_until": datetime_to_timestamp(valid_until),
+        endpoint = f"spaces/{self._space.uuid}/orders/"
+        data = {"isin": instrument.isin, "valid_until": datetime_to_timestamp(valid_until),
                   "side": side, "quantity": quantity}
         if stop_price is not None:
-            params['stop_price'] = stop_price
+            data['stop_price'] = stop_price
         if limit_price is not None:
-            params['limit_price'] = limit_price
+            data['limit_price'] = limit_price
 
-        data = self._request(endpoint=endpoint, method="POST", params=params)
+        data = self._request(endpoint=endpoint, method="POST", data=data)
         order = Order.from_response(instrument, data)
         status = order.status
-        self.orders[status].update({order.uuid: order})
+        self.orders[status.name].update({order.uuid: order})
         pass
 
     def update_order(self, order: Order):
-        endpoint = f"/spaces/{self._space.uuid}/orders/{order.uuid}/"
-        old_status = order.status
+        endpoint = f"spaces/{self._space.uuid}/orders/{order.uuid}/"
+        old_status = order.status.name
         self.orders[old_status].pop(order.uuid)
         data = self._request(endpoint=endpoint, method="GET")
-        order.update(data)
-        new_status = order.status
+        order.update_data(data)
+        new_status = order.status.name
         self.orders[new_status].update({order.uuid: order})
         status_changed = (old_status != new_status)
         return status_changed, new_status
 
     def activate_order(self, order: Order):
-        pass
+        endpoint = f"spaces/{self._space.uuid}/orders/{order.uuid}/activate/"
+        old_status = order.status.name
+        self.orders[old_status].pop(order.uuid)
+        data = self._request(endpoint=endpoint, method="PUT")
+        order.update_data(data)
+        new_status = order.status.name
+        self.orders[new_status].update({order.uuid: order})
+        return new_status == 'ACTIVE'
 
     def delete_order(self, order: Order):
-        pass
+        endpoint = f"spaces/{self._space.uuid}/orders/{order.uuid}/"
+        self._request(endpoint=endpoint, method="DELETE")
+        status_changed, new_status = self.update_order(order)
+        return status_changed, new_status
 
     #requests all orders matching the paramerts and adds them to the orders dict
     def get_orders(self,
@@ -120,7 +142,55 @@ class Orders(ApiClient):
                    side: str = None,
                    type: str = None,
                    status: str = None):
-        pass
+        endpoint = f"spaces/{self._space.uuid}/orders/"
+        params = {}
+        if created_at_until is not None:
+            params['created_at_until'] = datetime_to_timestamp(created_at_until)
+        if created_at_from is not None:
+            params['created_at_from'] = datetime_to_timestamp(created_at_from)
+        if side is not None:
+            params['side'] = side
+        if type is not None:
+            params['type'] = type
+        if status is not None:
+            params['status'] = status
+
+        results = self._request_paged(endpoint=endpoint, params=params)
+
+        #uuid's in old status
+        inactive_uuids = list(self.orders['INACTIVE'])
+        active_uuids = list(self.orders['ACTIVE'])
+        in_progress_uuids = list(self.orders['IN_PROGRESS'])
+        executed_uuids = list(self.orders['EXECUTED'])
+        deleted_uuids = list(self.orders['DELETED'])
+        expired_uuids = list(self.orders['EXPIRED'])
+
+        for o in results:
+            uuid = o.get('uuid')
+            if uuid in inactive_uuids:
+                self.orders['INACTIVE'].pop(uuid)
+            if uuid in active_uuids:
+                self.orders['ACTIVE'].pop(uuid)
+            if uuid in in_progress_uuids:
+                self.orders['IN_PROGRESS'].pop(uuid)
+            if uuid in executed_uuids:
+                self.orders['EXECUTED'].pop(uuid)
+            if uuid in deleted_uuids:
+                self.orders['DELETED'].pop(uuid)
+            if uuid in expired_uuids:
+                self.orders['EXPIRED'].pop(uuid)
+
+            instrument = Instruments(self._account).list_instruments(search="US2338252073")[0]
+            order = Order.from_response(instrument, o)
+            self.orders[order.status.name].update({order.uuid: order})
 
     def clean_orders(self):  # remove all executed, deleted or expired orders in the orders dict
-        pass
+        executed_uuids = list(self.orders['EXECUTED'])
+        deleted_uuids = list(self.orders['DELETED'])
+        expired_uuids = list(self.orders['EXPIRED'])
+        for uuid in executed_uuids:
+            self.orders['EXECUTED'].pop(uuid)
+        for uuid in deleted_uuids:
+            self.orders['DELETED'].pop(uuid)
+        for uuid in expired_uuids:
+            self.orders['EXPIRED'].pop(uuid)

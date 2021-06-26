@@ -12,7 +12,7 @@ class ApiClient:
         self._account = account
         self._endpoint = endpoint or DEFAULT_PAPER_REST_API_URL
 
-    def _request_paged(self, endpoint, data=None, params=None) -> List[dict]:
+    def _request_paged(self, endpoint, data_=None, params=None) -> List[dict]:
         if params is None:
             params = {}
 
@@ -25,7 +25,7 @@ class ApiClient:
             page_params = params.copy()
             if offset is not None:
                 page_params['offset'] = offset
-            data = self._request(endpoint, data=data, params=page_params)
+            data = self._request(endpoint, data=data_, params=page_params)
 
             results += data['results']
 
@@ -45,6 +45,8 @@ class ApiClient:
             response = requests.get(url=url, params=params, headers=headers)
         elif method == 'post':
             response = requests.post(url=url, data=data, headers=headers)
+        elif method == 'put':
+            response = requests.put(url=url, headers=headers)
         elif method == 'patch':
             response = requests.patch(url=url, data=data, params=params, headers=headers)
         elif method == 'delete':
@@ -54,5 +56,6 @@ class ApiClient:
 
         response.raise_for_status()
 
-        data = json.loads(response.content)
+        if method != 'delete':
+            data = json.loads(response.content)
         return data
