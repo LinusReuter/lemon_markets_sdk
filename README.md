@@ -69,3 +69,53 @@ instrument.currency
 instrument.tradable
 instrument.trading_venues
 ```
+
+### Time Helper
+All times in this library are stored as timezone aware datetime objects. 
+Furthermore, datetime objects are needed for passing a time to a library function, such as creating an order. 
+```python
+from lemon_markets.helpers.time_helper import *
+
+current_time()  # returns the current time as a timezone aware datetime object.
+time(year= , month= , day= , hour= , minute= , second= )  # all params require an integer and are optional. If paramameter is not set the current year/month/... is used. Returns a timezone aware datetime object. 
+
+# mostly for internal use:
+datetime_to_timestamp(datetime) # creates an UTC timestamp from the given datetime objects. 
+timestamp_to_datetime(timestamp) # creates an datetime object with local timezone from the given UTC timestamp.
+
+```
+
+
+### Orders
+```python
+from lemon_markets.paper_money.order import *
+
+# Initialise the Orders Class
+orders = Orders(account=acc, space=space)
+print(orders.orders) # see all created and retrieved orders sorted in dicts by status. 
+# the Structure of the orders.orders dict:
+# {'INACTIVE': {'order_uuid': Order}, 
+#  'ACTIVATED': {'order_uuid': Order}, 
+#  'IN_PROGRESS': {'order_uuid': Order}, 
+#  'EXECUTED': {'order_uuid': Order}, 
+#  'DELETED': {'order_uuid': Order}, 
+#  'EXPIRED': {'order_uuid': Order}}
+
+# create an order:
+order = orders.create_order(instrument=, valid_until=, quantity=, side=)  # creates and order stores it in the orders.orders dict and returns the order
+
+# activate an order:
+orders.activate_order(order)
+
+# update the status and data of an order:
+orders.update_order(order)
+
+#delete an order:
+orders.delete_order(order)
+
+# fill the orders.orders dict by listing your orders
+orders.get_orders(created_at_until=, created_at_from=, side=, type= , status=)  # all params optional
+
+# clean the orders.orders dict:
+orders.clean_orders()  # removes all executed, deleted or expired orders in the orders dict
+```

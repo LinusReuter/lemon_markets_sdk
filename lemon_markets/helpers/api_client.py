@@ -44,7 +44,7 @@ class ApiClient:
         if method == 'get':
             response = requests.get(url=url, params=params, headers=headers)
         elif method == 'post':
-            response = requests.post(url=url, data=data, headers=headers)
+            response = requests.post(url=url, data=data, params=params, headers=headers)
         elif method == 'put':
             response = requests.put(url=url, headers=headers)
         elif method == 'patch':

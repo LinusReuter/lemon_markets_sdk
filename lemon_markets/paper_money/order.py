@@ -1,7 +1,5 @@
-from datetime import datetime
 from enum import Enum
 from dataclasses import dataclass
-from typing import *
 
 from lemon_markets.helpers.api_client import ApiClient
 from lemon_markets.account import Account
@@ -12,7 +10,7 @@ from lemon_markets.helpers.time_helper import *
 
 class OrderStatus(Enum):
     INACTIVE = 'inactive'
-    ACTIVE = 'active'
+    ACTIVATED = 'activated'
     IN_PROGRESS = 'in_progress'
     EXECUTED = 'executed'
     DELETED = 'deleted'
@@ -67,15 +65,6 @@ class Order:
         self.processed_at = data.get('processed_at')
         self.processed_quantity = data.get('processed_quantity')
 
-    def activate(self):
-        pass
-
-    def update(self):
-        pass
-
-    def delete(self):
-        pass
-
 
 class Orders(ApiClient):
     _space: Space
@@ -106,7 +95,7 @@ class Orders(ApiClient):
         order = Order.from_response(instrument, data)
         status = order.status
         self.orders[status.name].update({order.uuid: order})
-        pass
+        return order
 
     def update_order(self, order: Order):
         endpoint = f"spaces/{self._space.uuid}/orders/{order.uuid}/"
@@ -127,7 +116,7 @@ class Orders(ApiClient):
         order.update_data(data)
         new_status = order.status.name
         self.orders[new_status].update({order.uuid: order})
-        return new_status == 'ACTIVE'
+        return new_status == 'ACTIVATED'
 
     def delete_order(self, order: Order):
         endpoint = f"spaces/{self._space.uuid}/orders/{order.uuid}/"
@@ -159,7 +148,7 @@ class Orders(ApiClient):
 
         #uuid's in old status
         inactive_uuids = list(self.orders['INACTIVE'])
-        active_uuids = list(self.orders['ACTIVE'])
+        active_uuids = list(self.orders['ACTIVATED'])
         in_progress_uuids = list(self.orders['IN_PROGRESS'])
         executed_uuids = list(self.orders['EXECUTED'])
         deleted_uuids = list(self.orders['DELETED'])
@@ -170,7 +159,7 @@ class Orders(ApiClient):
             if uuid in inactive_uuids:
                 self.orders['INACTIVE'].pop(uuid)
             if uuid in active_uuids:
-                self.orders['ACTIVE'].pop(uuid)
+                self.orders['ACTIVATED'].pop(uuid)
             if uuid in in_progress_uuids:
                 self.orders['IN_PROGRESS'].pop(uuid)
             if uuid in executed_uuids:
@@ -184,7 +173,7 @@ class Orders(ApiClient):
             order = Order.from_response(instrument, o)
             self.orders[order.status.name].update({order.uuid: order})
 
-    def clean_orders(self):  # remove all executed, deleted or expired orders in the orders dict
+    def clean_orders(self):  # removes all executed, deleted or expired orders in the orders dict
         executed_uuids = list(self.orders['EXECUTED'])
         deleted_uuids = list(self.orders['DELETED'])
         expired_uuids = list(self.orders['EXPIRED'])
