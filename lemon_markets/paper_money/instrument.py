@@ -64,6 +64,6 @@ class Instruments(ApiClient):
         data_rows = self._request_paged('instruments/', params=params)
         return [Instrument.from_response(data) for data in data_rows]
 
-    def get_instrument(self, isin: str) -> Instrument:
-        data = self._request('instruments/'+isin+'/')
-        return Instrument.from_response(data)
+    # def get_instrument(self, isin: str) -> Instrument:
+    #     data = self._request('instruments/'+isin+'/')
+    #     return Instrument.from_response(data)

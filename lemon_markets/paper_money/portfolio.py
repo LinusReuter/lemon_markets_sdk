@@ -24,3 +24,22 @@ class Position:
             average_price=data.get('average_price'),
             latest_total_value=data.get('latest_total_value')
         )
+
+
+class Portfolio(ApiClient):
+    _space: Space
+    positions: list = []
+
+    def __init__(self, account: Account, space: Space):
+        self._space = space
+        super().__init__(account=account)
+
+    def update_positions(self):
+        endpoint = f"spaces/{self._space.uuid}/portfolio/"
+        data_rows = self._request_paged(endpoint=endpoint)
+
+        self.positions = []
+        for data in data_rows:
+            isin = data["instrument"].get("isin")
+            instrument = Instruments(self._account).list_instruments(search=isin)[0]
+            self.positions.append(Position.from_response(instrument=instrument, data=data))
