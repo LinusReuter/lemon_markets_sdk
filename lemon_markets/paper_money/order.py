@@ -169,7 +169,8 @@ class Orders(ApiClient):
             if uuid in expired_uuids:
                 self.orders['EXPIRED'].pop(uuid)
 
-            instrument = Instruments(self._account).list_instruments(search="US2338252073")[0]
+            isin = o["instrument"].get("isin")
+            instrument = Instruments(self._account).list_instruments(search=isin)[0]
             order = Order.from_response(instrument, o)
             self.orders[order.status.name].update({order.uuid: order})
 
