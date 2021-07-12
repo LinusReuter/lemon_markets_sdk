@@ -38,7 +38,7 @@ class ApiClient:
                 else:
                     next = data['next']
         except requests.Timeout:
-            raise LemonConnectionException("Network Timeout on url: %s" % url)
+            raise LemonConnectionException("Network Timeout on url: %s" % endpoint)
 
         if data.status_code < 399:
             raise LemonAPIException(status=data.status_code, errormessage=data.reason)
