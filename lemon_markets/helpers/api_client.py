@@ -21,19 +21,27 @@ class ApiClient:
         offset = None
         next = None
         results = []
-        while True:
-            offset = next
-            page_params = params.copy()
-            if offset is not None:
-                page_params['offset'] = offset
-            data = self._request(endpoint, data=data_, params=page_params)
 
-            results += data['results']
+        try:
 
-            if data['next'] is None or data['next'] <= offset:
-                break
-            else:
-                next = data['next']
+            while True:
+                offset = next
+                page_params = params.copy()
+                if offset is not None:
+                    page_params['offset'] = offset
+                data = self._request(endpoint, data=data_, params=page_params)
+
+                results += data['results']
+
+                if data['next'] is None or data['next'] <= offset:
+                    break
+                else:
+                    next = data['next']
+        except requests.Timeout:
+            raise LemonConnectionException("Network Timeout on url: %s" % url)
+
+        if data.status_code < 399:
+            raise LemonAPIException(status=data.status_code, errormessage=data.reason)
 
         return results
 
