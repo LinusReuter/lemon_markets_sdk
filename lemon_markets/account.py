@@ -3,6 +3,7 @@ import requests
 import json
 
 from lemon_markets.config import DEFAULT_AUTH_API_URL
+from lemon_markets.exceptions import LemonConnectionException
 
 
 class Account:
@@ -50,6 +51,6 @@ class Account:
         if self._access_token_type == "bearer":
             s = "Bearer " + self.access_token
         else:
-            raise Exception("Error: unknown token type")
+            raise LemonConnectionException("Error: unknown token type")
 
         return {"Authorization": s}

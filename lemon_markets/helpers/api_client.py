@@ -4,6 +4,7 @@ from typing import *
 
 from lemon_markets.account import Account
 from lemon_markets.config import DEFAULT_PAPER_REST_API_URL
+from lemon_markets.exceptions import LemonConnectionException, LemonAPIException
 
 
 class ApiClient:
@@ -41,20 +42,26 @@ class ApiClient:
         url = self._endpoint+endpoint
         headers = self._account.authorization
 
-        if method == 'get':
-            response = requests.get(url=url, params=params, headers=headers)
-        elif method == 'post':
-            response = requests.post(url=url, data=data, params=params, headers=headers)
-        elif method == 'put':
-            response = requests.put(url=url, headers=headers)
-        elif method == 'patch':
-            response = requests.patch(url=url, data=data, params=params, headers=headers)
-        elif method == 'delete':
-            response = requests.delete(url=url, params=params, headers=headers)
-        else:
-            raise ValueError('Unknown method: %r' % method)
+        try:
+            if method == 'get':
+                response = requests.get(url=url, params=params, headers=headers)
+            elif method == 'post':
+                response = requests.post(url=url, data=data, params=params, headers=headers)
+            elif method == 'put':
+                response = requests.put(url=url, headers=headers)
+            elif method == 'patch':
+                response = requests.patch(url=url, data=data, params=params, headers=headers)
+            elif method == 'delete':
+                response = requests.delete(url=url, params=params, headers=headers)
+            else:
+                raise ValueError('Unknown method: %r' % method)
 
-        response.raise_for_status()
+            response.raise_for_status()
+        except requests.Timeout:
+            raise LemonConnectionException("Network Timeout on url: %s" % url)
+
+        if response.status_code < 399:
+            raise LemonAPIException(status=response.status_code, errormessage=response.reason)
 
         if method != 'delete':
             data = json.loads(response.content)
