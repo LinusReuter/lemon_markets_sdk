@@ -12,7 +12,8 @@ class TradingVenues(ApiClient):
         super().__init__(account=account)
 
     def get_venues(self):
-        data_rows = self._request_paged('trading-venues/')
+        data = self._request(endpoint='trading-venues/')
+        data_rows = data.get("results")
         self.trading_venues = [TradingVenue.from_response(self, data) for data in data_rows]
 
     def get_opening_days(self, mic):
@@ -43,6 +44,7 @@ class TradingVenue:
         if self.opening_days is None:
             self.get_opening_days()
 
+        print(self.opening_days)
         for data in self.opening_days:
             if day == data.get('day_iso'):
                 if timestamp_to_datetime(data.get("opening_time")) <= current_time() <= timestamp_to_datetime(
@@ -97,4 +99,4 @@ class TradingVenue:
         return timedelta()
 
     def get_opening_days(self):
-        self.opening_days = self.request_class.get_opening_days(self.mic)
+        self.opening_days = self.request_class.get_opening_days(self.mic).get("results")

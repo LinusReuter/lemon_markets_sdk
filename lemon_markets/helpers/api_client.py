@@ -40,7 +40,7 @@ class ApiClient:
         except requests.Timeout:
             raise LemonConnectionException("Network Timeout on url: %s" % endpoint)
 
-        if data.status_code < 399:
+        if data.status_code > 399:
             raise LemonAPIException(status=data.status_code, errormessage=data.reason)
 
         return results
@@ -68,7 +68,7 @@ class ApiClient:
         except requests.Timeout:
             raise LemonConnectionException("Network Timeout on url: %s" % url)
 
-        if response.status_code < 399:
+        if response.status_code > 399:
             raise LemonAPIException(status=response.status_code, errormessage=response.reason)
 
         if method != 'delete':
