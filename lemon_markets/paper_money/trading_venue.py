@@ -44,7 +44,6 @@ class TradingVenue:
         if self.opening_days is None:
             self.get_opening_days()
 
-        print(self.opening_days)
         for data in self.opening_days:
             if day == data.get('day_iso'):
                 if timestamp_to_datetime(data.get("opening_time")) <= current_time() <= timestamp_to_datetime(
