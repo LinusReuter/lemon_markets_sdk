@@ -3,6 +3,10 @@
 This is a Python SDK for accessing the Lemon Markets API.
 API documentation can be found here: https://docs.lemon.markets
 
+> Note: [lemon.markets](https://lemon.markets) is in closed beta and this SDK is a work in progress. 
+> 
+> Pull requests to expand the SDK or improve its reliability are welcome.
+
 ## Installation
 
 ```
@@ -26,6 +30,7 @@ account = Account(your_client_id, your_client_secret)
 
 #for seeing your accsess token
 print(account.access_token)
+
 ```
 
 ### State and Space
@@ -45,6 +50,7 @@ print(space.state) #the state of the space as dict like in the API response.
 #the elements of the state as floats:
 print(space.balance)
 print(space.cash_to_invest)
+
 ```
 
 ### Instruments
@@ -68,6 +74,7 @@ instrument.symbol
 instrument.currency
 instrument.tradable
 instrument.trading_venues
+
 ```
 
 ### Time Helper
@@ -118,6 +125,7 @@ orders.get_orders(created_at_until=, created_at_from=, side=, type= , status=)  
 
 # clean the orders.orders dict:
 orders.clean_orders()  # removes all executed, deleted or expired orders in the orders dict
+
 ```
 
 ### Trading Venues
@@ -150,5 +158,6 @@ ohlc = OHLC(account=acc) # initialisation
 # if the as_df param is set to False, the function returns the results unedited in the list given by the API response. 
 data = ohlc.get_data(instrument=, venue=, x1=, # these are nessesary params. instrument and venue must be an instance of the corresponding class
                      date_from=None, date_until=None, ordering=None, as_df=True) # these params are optional (default values are displayed here)
+
 ```
 
