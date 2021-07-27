@@ -1,7 +1,7 @@
 # Lemon Markets API Access
 
 This is a Python SDK for accessing the Lemon Markets API.
-API documentation can be found here: https://documentation.lemon.markets/
+API documentation can be found here: https://docs.lemon.markets
 
 ## Installation
 
@@ -119,3 +119,36 @@ orders.get_orders(created_at_until=, created_at_from=, side=, type= , status=)  
 # clean the orders.orders dict:
 orders.clean_orders()  # removes all executed, deleted or expired orders in the orders dict
 ```
+
+### Trading Venues
+```python
+from lemon_markets.paper_money.trading_venue import *
+
+venues = TradingVenues(acc) # initialisation
+venues.get_venues() # requests all venues and saves them internally in a list reachable under venues.trading_venues
+xmun = venues.trading_venues[0] #get the first (and right now only) trading venue
+
+#Informations a trading venue can return
+xmun.name # returns the name (Börse München - Gettex)
+xmun.mic # returns the mic (XMUN)
+xmun.is_open # returns a bool 
+xmun.time_until_open # returns a datetime timedelta (only considers the current day, if the venue is already open or has closed the timedelta will be negative until the next morning. (no restart necessary))
+xmun.time_until_close # returns a datetime timedelta (only considers the current day, if the venue has already closed the timedelta will be negative until the next morning. (no restart necessary))
+
+```
+
+### Market Data
+
+#### OHLC
+```python
+from lemon_markets.paper_money.market_data import OHLC
+
+ohlc = OHLC(account=acc) # initialisation
+
+# requests OHLC_Data 
+# by default the data is returned as a dataframe with the time as a aware datetime object as index respecting the given ordering parameter.
+# if the as_df param is set to False, the function returns the results unedited in the list given by the API response. 
+data = ohlc.get_data(instrument=, venue=, x1=, # these are nessesary params. instrument and venue must be an instance of the corresponding class
+                     date_from=None, date_until=None, ordering=None, as_df=True) # these params are optional (default values are displayed here)
+```
+
