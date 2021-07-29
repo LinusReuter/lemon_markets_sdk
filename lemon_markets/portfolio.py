@@ -19,8 +19,8 @@ class Position:
         return cls(
             instrument=instrument,
             quantity=data.get('quantity'),
-            average_price=data.get('average_price'),
-            latest_total_value=data.get('latest_total_value')
+            average_price=float(data.get('average_price')),
+            latest_total_value=float(data.get('latest_total_value'))
         )
 
 
