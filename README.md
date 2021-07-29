@@ -26,7 +26,9 @@ Your access_token is automatically updated when it expires.
 ```python
 from lemon_markets.account import Account
 
-account = Account(your_client_id, your_client_secret)
+#The third argument is optional (default value displayed) and sets the structure 
+# to change to real money trading when supported by the API (trading_type='money'). 
+account = Account(your_client_id, your_client_secret, trading_type='paper')
 
 #for seeing your accsess token
 print(account.access_token)
@@ -87,7 +89,10 @@ Furthermore, datetime objects are needed for passing a time to a library functio
 from lemon_markets.helpers.time_helper import *
 
 current_time()  # returns the current time as a timezone aware datetime object.
-time(year= , month= , day= , hour= , minute= , second= )  # all params require an integer and are optional. If paramameter is not set the current year/month/... is used. Returns a timezone aware datetime object. 
+
+# all params require an integer and are optional. If parameter is not set the current year/month/... is used. 
+# Returns a timezone aware datetime object. 
+time(year= , month= , day= , hour= , minute= , second= )  
 
 # mostly for internal use:
 datetime_to_timestamp(datetime) # creates an UTC timestamp from the given datetime objects. 
