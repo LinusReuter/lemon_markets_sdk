@@ -14,7 +14,7 @@ class State(ApiClient):
     def get_state(self):
         data = self._request(endpoint='state/')
         try:
-            self._balance = float(data.get('balance'))
+            self._balance = float(data.get('state').get('balance'))
             self._state = data
         except Exception:
             raise Exception

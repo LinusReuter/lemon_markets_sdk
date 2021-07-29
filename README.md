@@ -63,7 +63,7 @@ from lemon_markets.instrument import *
 # getting a list of all Instruments matching the query params 
 # (all arguments are an option and not needed)
 instruments = Instruments(account).list_instruments(tradable=true / false, search="Name/Title, WKN, Symbol or ISIN",
-                                                    currency="", type="one of the following:"("stock", "bond", "fond",
+                                                    currency="", type="one of the following:"("stock", "bond", "fund",
                                                                                               "ETF" or "warrant"))
 
 # get a singe instrument by isin:

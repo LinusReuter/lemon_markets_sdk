@@ -9,7 +9,7 @@ from typing import *
 class InstrumentType(Enum):
     STOCK = 'stock'
     BOND = 'bond'
-    FOND = 'fond'
+    FUND = 'fund'
     WARRANT = 'warrant'
 
 
@@ -50,7 +50,7 @@ class Instruments(ApiClient):
     def __init__(self, account: Account):
         super().__init__(account=account)
 
-    def list_instruments(self, tradable: bool = None, search: str = None, currency: str = None, type: InstrumentType = None) -> List[Instrument]:
+    def list_instruments(self, tradable: bool = None, search: str = None, currency: str = None, type: str = None) -> List[Instrument]:
         params = {}
         if tradable is not None:
             params['tradable'] = tradable
@@ -59,11 +59,8 @@ class Instruments(ApiClient):
         if currency is not None:
             params['currency'] = currency
         if type is not None:
-            params['type'] = type.value
+            params['type'] = type
 
         data_rows = self._request_paged('instruments/', params=params)
         return [Instrument.from_response(data) for data in data_rows]
 
-    # def get_instrument(self, isin: str) -> Instrument:
-    #     data = self._request('instruments/'+isin+'/')
-    #     return Instrument.from_response(data)
