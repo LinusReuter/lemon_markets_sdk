@@ -9,9 +9,9 @@ from lemon_markets.exceptions import LemonConnectionException, LemonAPIException
 
 class ApiClient:
 
-    def __init__(self, account: Account = None, endpoint: str = None):
+    def __init__(self, account: Account, endpoint: str = None):
         self._account = account
-        self._endpoint = endpoint or DEFAULT_PAPER_REST_API_URL
+        self._endpoint = endpoint or self._account.DEFAULT_API_URL
 
     def _request_paged(self, endpoint, data_=None, params=None) -> List[dict]:
 

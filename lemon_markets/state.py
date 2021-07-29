@@ -1,6 +1,6 @@
 from lemon_markets.helpers.api_client import ApiClient
 from lemon_markets.account import Account
-from lemon_markets.paper_money.space import Space
+from lemon_markets.space import Space
 
 
 class State(ApiClient):

@@ -5,8 +5,8 @@ import pandas as pd
 from lemon_markets.helpers.api_client import ApiClient
 from lemon_markets.account import Account
 from lemon_markets.helpers.time_helper import datetime_to_timestamp
-from lemon_markets.paper_money.instrument import Instrument
-from lemon_markets.paper_money.trading_venue import TradingVenue
+from lemon_markets.instrument import Instrument
+from lemon_markets.trading_venue import TradingVenue
 
 
 @dataclass()
