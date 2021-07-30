@@ -1,14 +1,36 @@
 from enum import Enum
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Union
 
-from lemon_markets.helpers.api_client import ApiClient
+from lemon_markets.helpers.api_client import _ApiClient
 from lemon_markets.account import Account
-from lemon_markets.instrument import Instrument, Instruments
+from lemon_markets.instrument import Instrument, Instruments, InstrumentType
 from lemon_markets.space import Space
-from lemon_markets.helpers.time_helper import *
+from lemon_markets.helpers.time_helper import timestamp_to_datetime, datetime_to_timestamp
 
 
 class OrderStatus(Enum):
+    """
+    Class for different order statuses.
+
+    Properties
+    ----------
+    INACTIVE : 'inactive'
+        Order is inactive
+    ACTIVATED : 'activated'
+        Order is activated
+    IN_PROGRESS : 'in_progress'
+        Order is in in progress
+    EXECUTED : 'executed'
+        Order is done executed
+    DELETED : 'deleted'
+        Order was deleted
+    EXPIRED : 'expired'
+        Order expired
+
+    """
+
     INACTIVE = 'inactive'
     ACTIVATED = 'activated'
     IN_PROGRESS = 'in_progress'
@@ -19,29 +41,86 @@ class OrderStatus(Enum):
 
 @dataclass()
 class Order:
+    """
+    Dataclass representing an order.
+
+    Properties
+    ----------
+    instrument : Instrument
+        The instrument that was ordered
+    quantity : int
+        The quantity
+    valid_until : datetime
+        The time until which the order is valid
+    created_at : datetime
+        The time it was created at
+    processed_at : datetime
+        The time the last part of the order was processed at
+    processed_quantity : int
+        The amount that is already processed (in case of partial processing)
+    average_price : str
+        The average price the order has been fulfilled at
+    limit_price : float
+        The limit price
+    stop_price : float
+        The stop price
+    type : InstrumentType
+        The type of the instrument
+    side : str
+        The side of the order. `buy` or `sell`
+    uuid : str
+        The order uuid
+    status : OrderStatus
+        The status of the order
+
+
+    Raises
+    ------
+    ValueError
+        Raised if the instrument type is unknown.
+
+    """
+
     instrument: Instrument = None
     quantity: int = None
     valid_until: datetime = None
     created_at: datetime = None
     processed_at: datetime = None
     processed_quantity: int = None
-    average_price: str = None
+    average_price: str = None       # TODO convert to float?
     limit_price: float = None
     stop_price: float = None
     type: str = None
     side: str = None
     uuid: str = None
     status: OrderStatus = None
-    trading_venue: dict = None
+    trading_venue: dict = None      # TODO data type?
 
     @classmethod
     def from_response(cls, instrument: Instrument, data: dict):
+        # TODO why are instrument and data seperate params
+        """
+        Create object from response data.
+
+        Parameters
+        ----------
+        instrument : Instrument
+            The instrument of the order
+        data : dict
+            Additional request data
+
+        Raises
+        ------
+        ValueError
+            Raised if Instrumnt type is invalid
+
+        """
         try:
             status_ = OrderStatus(data.get('status'))
         except (ValueError, KeyError):
             raise ValueError('Unexpected instrument type: %r' % data.get('type'))
 
-        return cls(
+        return cls(             # TODO missing properties?
             instrument=instrument,
             quantity=data.get('quantity'),
             valid_until=timestamp_to_datetime(data.get('valid_until')),
@@ -54,6 +133,20 @@ class Order:
         )
 
     def update_data(self, data: dict):
+        """
+        Update non-static properties from a request's data.
+
+        Parameters
+        ----------
+        data : dict
+            The request data
+
+        Raises
+        ------
+        ValueError
+            Raised if Instrumnt type is invalid
+
+        """
         try:
             status_ = OrderStatus(data.get('status'))
         except (ValueError, KeyError):
@@ -61,16 +154,29 @@ class Order:
         self.status = status_
         self.average_price = data.get('average_price')
         self.created_at = data.get('created_at')
-        self.type = data.get('type')
+        self.type = InstrumentType(data.get('type'))
         self.processed_at = data.get('processed_at')
         self.processed_quantity = data.get('processed_quantity')
 
 
-class Orders(ApiClient):
+class Orders(_ApiClient):
+    """Access orders for this space."""
+
     _space: Space
     orders = {}  # Structures all orders in a dict containing a dict (the index is the uuid) of orders for each last known order status.
 
     def __init__(self, account: Account, space: Space):
+        """
+        Initalise with an your account and a space.
+
+        Parameters
+        ----------
+        account : Account
+            The account object
+        space : Space
+            The space object
+
+        """
         self._space = space
         super().__init__(account=account)
         for status in OrderStatus:
@@ -82,10 +188,34 @@ class Orders(ApiClient):
                      side: str,
                      quantity: int,
                      stop_price: Union[int, float] = None,
-                     limit_price: Union[int, float] = None):
+                     limit_price: Union[int, float] = None) -> Order:
+        """
+        Create an order.
+
+        Parameters
+        ----------
+        instrument : Instrument
+            The instrument to buy/sell
+        valid_until : datetime
+            The time until which this order is valid
+        side : str
+            The side of the order. `buy` or `sell`
+        quantity : int
+            Quantity to order
+        stop_price : int or float, optional
+            The price aat which to activate the order
+        limit_price : int or float, optional
+            The price limit while ordering
+
+        Returns
+        -------
+        Order
+            The order created
+
+        """
         endpoint = f"spaces/{self._space.uuid}/orders/"
         data = {"isin": instrument.isin, "valid_until": datetime_to_timestamp(valid_until),
-                  "side": side, "quantity": quantity}
+                "side": side, "quantity": quantity}
         if stop_price is not None:
             data['stop_price'] = stop_price
         if limit_price is not None:
@@ -98,17 +228,48 @@ class Orders(ApiClient):
         return order
 
     def update_order(self, order: Order):
+        """
+        Update the order status.
+
+        Parameters
+        ----------
+        order : Order
+            The order to update
+
+        Returns
+        -------
+        bool or OrderStatus
+            status_changed:
+                True if status has changed
+            new_status:
+                The new OrderStatus
+
+        """
         endpoint = f"spaces/{self._space.uuid}/orders/{order.uuid}/"
         old_status = order.status.name
         self.orders[old_status].pop(order.uuid)
         data = self._request(endpoint=endpoint, method="GET")
         order.update_data(data)
-        new_status = order.status.name
+        new_status = OrderStatus(order.status.name)
         self.orders[new_status].update({order.uuid: order})
         status_changed = (old_status != new_status)
         return status_changed, new_status
 
     def activate_order(self, order: Order):
+        """
+        Activate an order.
+
+        Parameters
+        ----------
+        order : Order
+            The order to update
+
+        Returns
+        -------
+        bool
+            `True` if the order was successfully activated
+
+        """
         endpoint = f"spaces/{self._space.uuid}/orders/{order.uuid}/activate/"
         old_status = order.status.name
         self.orders[old_status].pop(order.uuid)
@@ -119,18 +280,49 @@ class Orders(ApiClient):
         return new_status == 'ACTIVATED'
 
     def delete_order(self, order: Order):
+        """
+        Delete specified order.
+
+        Parameters
+        ----------
+        order : Order
+            [description]
+
+        Returns
+        -------
+        [type]
+            [description]
+
+        """
         endpoint = f"spaces/{self._space.uuid}/orders/{order.uuid}/"
         self._request(endpoint=endpoint, method="DELETE")
         status_changed, new_status = self.update_order(order)
         return status_changed, new_status
 
-    #requests all orders matching the paramerts and adds them to the orders dict
+    # requests all orders matching the paramerts and adds them to the orders dict
     def get_orders(self,
                    created_at_until: datetime = None,
                    created_at_from: datetime = None,
                    side: str = None,
                    type: str = None,
                    status: str = None):
+        """
+        Return orders by criteria.
+
+        Parameters
+        ----------
+        created_at_until : datetime, optional
+            Limit results to orders created before this point in time
+        created_at_from : datetime, optional
+            Limit results to orders created after this point in time
+        side : str, optional
+            Filter by side. `buy` or `sell`
+        type : str, optional
+            Filter by type. `stock`, `bond`, `fund` or `warrant`
+        status : str, optional
+            Filter by status.
+
+        """
         endpoint = f"spaces/{self._space.uuid}/orders/"
         params = {}
         if created_at_until is not None:
@@ -146,7 +338,7 @@ class Orders(ApiClient):
 
         results = self._request_paged(endpoint=endpoint, params=params)
 
-        #uuid's in old status
+        # uuid's in old status
         inactive_uuids = list(self.orders['INACTIVE'])
         active_uuids = list(self.orders['ACTIVATED'])
         in_progress_uuids = list(self.orders['IN_PROGRESS'])
@@ -175,6 +367,7 @@ class Orders(ApiClient):
             self.orders[order.status.name].update({order.uuid: order})
 
     def clean_orders(self):  # removes all executed, deleted or expired orders in the orders dict
+        """Remove executed, deleted and expired orders from the list."""
         executed_uuids = list(self.orders['EXECUTED'])
         deleted_uuids = list(self.orders['DELETED'])
         expired_uuids = list(self.orders['EXPIRED'])

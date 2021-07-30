@@ -1,13 +1,13 @@
 import json
 import requests
-from typing import *
+from typing import List
 
 from lemon_markets.account import Account
-from lemon_markets.config import DEFAULT_PAPER_REST_API_URL
 from lemon_markets.exceptions import LemonConnectionException, LemonAPIException
 
 
-class ApiClient:
+class _ApiClient:
+    """Base class for authenticated HTTPS requests."""
 
     def __init__(self, account: Account, endpoint: str = None):
         self._account = account
@@ -45,7 +45,7 @@ class ApiClient:
             url = self._endpoint+endpoint
         else:
             url = endpoint
-        headers = self._account.authorization
+        headers = self._account._authorization
 
         try:
             if method == 'get':

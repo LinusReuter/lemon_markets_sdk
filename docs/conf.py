@@ -1,7 +1,7 @@
-# pylama:ignore=E501
-
 import os
 import sys
+sys.path.insert(0, os.path.abspath('..'))
+from lemon_markets import __version__ as version    # PEP8 autoformatter often moves this import to the top, it must be below the sys.path.insert path though
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -9,12 +9,11 @@ import sys
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-sys.path.insert(0, os.path.abspath('..'))
 
 project = "lemon-markets-api-access"
 copyright = "Linus Reuter, MIT License"
 author = "Linus Reuter"
-release = "0.0.1"  # TODO change
+release = version
 
 # -- General configuration ---------------------------------------------------
 
@@ -23,10 +22,8 @@ release = "0.0.1"  # TODO change
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.coverage",
-    "sphinx.ext.napoleon",
-    "sphinx.ext.intersphinx",
-    "sphinxcontrib.programoutput"
+    "sphinx.ext.autosummary",
+    "sphinx.ext.napoleon"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -48,4 +45,8 @@ html_theme = "sphinx_rtd_theme"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
+html_static_path = ["_static"]
+
+html_css_files = [
+    "css/default.css"
+]

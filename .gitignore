@@ -2,6 +2,10 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm,windows
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm,windows
 
+# vscode folder
+.vscode/
+
+
 ### PyCharm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
