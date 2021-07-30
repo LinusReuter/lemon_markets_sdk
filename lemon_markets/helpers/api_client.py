@@ -9,45 +9,42 @@ from lemon_markets.exceptions import LemonConnectionException, LemonAPIException
 
 class ApiClient:
 
-    def __init__(self, account: Account = None, endpoint: str = None):
+    def __init__(self, account: Account, endpoint: str = None):
         self._account = account
-        self._endpoint = endpoint or DEFAULT_PAPER_REST_API_URL
+        self._endpoint = endpoint or self._account.DEFAULT_API_URL
 
     def _request_paged(self, endpoint, data_=None, params=None) -> List[dict]:
-        if params is None:
-            params = {}
 
         # Keep requesting until there are no more pages
-        offset = None
         next = None
         results = []
 
         try:
 
             while True:
-                offset = next
-                page_params = params.copy()
-                if offset is not None:
-                    page_params['offset'] = offset
-                data = self._request(endpoint, data=data_, params=page_params)
+
+                if next is not None:
+                    data = self._request(next, data=data_, url_prefix=False)
+                else:
+                    data = self._request(endpoint, data=data_, params=params)
 
                 results += data['results']
 
-                if data['next'] is None or data['next'] <= offset:
+                if data['next'] is None or data['next'] == next:
                     break
                 else:
                     next = data['next']
         except requests.Timeout:
             raise LemonConnectionException("Network Timeout on url: %s" % endpoint)
 
-        if data.status_code > 399:
-            raise LemonAPIException(status=data.status_code, errormessage=data.reason)
-
         return results
 
-    def _request(self, endpoint, method='GET', data=None, params=None):
+    def _request(self, endpoint, method='GET', data=None, params=None, url_prefix=True):
         method = method.lower()
-        url = self._endpoint+endpoint
+        if url_prefix:
+            url = self._endpoint+endpoint
+        else:
+            url = endpoint
         headers = self._account.authorization
 
         try:
@@ -65,6 +62,7 @@ class ApiClient:
                 raise ValueError('Unknown method: %r' % method)
 
             response.raise_for_status()
+
         except requests.Timeout:
             raise LemonConnectionException("Network Timeout on url: %s" % url)
 

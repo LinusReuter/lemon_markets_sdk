@@ -1,6 +1,6 @@
 from lemon_markets.helpers.api_client import ApiClient
 from lemon_markets.account import Account
-from lemon_markets.paper_money.space import Space
+from lemon_markets.space import Space
 
 
 class State(ApiClient):
@@ -14,7 +14,7 @@ class State(ApiClient):
     def get_state(self):
         data = self._request(endpoint='state/')
         try:
-            self._balance = float(data.get('balance'))
+            self._balance = float(data.get('state').get('balance'))
             self._state = data
         except Exception:
             raise Exception

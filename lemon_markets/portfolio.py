@@ -1,10 +1,9 @@
-from enum import Enum
 from dataclasses import dataclass
 
 from lemon_markets.helpers.api_client import ApiClient
 from lemon_markets.account import Account
-from lemon_markets.paper_money.instrument import Instrument, Instruments
-from lemon_markets.paper_money.space import Space
+from lemon_markets.instrument import Instrument, Instruments
+from lemon_markets.space import Space
 
 
 @dataclass()
@@ -20,8 +19,8 @@ class Position:
         return cls(
             instrument=instrument,
             quantity=data.get('quantity'),
-            average_price=data.get('average_price'),
-            latest_total_value=data.get('latest_total_value')
+            average_price=float(data.get('average_price')),
+            latest_total_value=float(data.get('latest_total_value'))
         )
 
 
