@@ -1,3 +1,4 @@
+/* hack to make the unwanted type hints disappear */
 .py.attribute {
     display: none !important;
 }

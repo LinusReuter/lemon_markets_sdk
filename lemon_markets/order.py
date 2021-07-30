@@ -202,9 +202,9 @@ class Orders(_ApiClient):
             The side of the order. `buy` or `sell`
         quantity : int
             Quantity to order
-        stop_price : int or float, optional
-            The price aat which to activate the order
-        limit_price : int or float, optional
+        stop_price : Union[int, float], optional
+            The price at which to activate the order
+        limit_price : Union[int, float], optional
             The price limit while ordering
 
         Returns
@@ -238,7 +238,7 @@ class Orders(_ApiClient):
 
         Returns
         -------
-        bool or OrderStatus
+        Union[bool, OrderStatus]
             status_changed:
                 True if status has changed
             new_status:

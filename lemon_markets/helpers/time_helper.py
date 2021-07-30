@@ -40,6 +40,7 @@ def datetime_to_timestamp(dt: datetime) -> float:
 
 def current_time() -> datetime:  # gets time in local timezone
     """Returns timezone-aware current time as datetime"""
+
     return datetime.now().astimezone()
 
 

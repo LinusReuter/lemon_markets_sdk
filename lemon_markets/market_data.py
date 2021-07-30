@@ -27,7 +27,7 @@ class OHLC(_ApiClient):
 
     def get_data(self, instrument: Instrument, venue: TradingVenue, x1: str, ordering: str = None,
                  date_from: datetime = None, date_until: datetime = None, as_df: bool = True):
-        # TODO what does the x1 param mean?
+        # TODO what does the x1 param and ordering mean?
         """
         Get OHLC data on the specified instrument.
 
@@ -38,7 +38,7 @@ class OHLC(_ApiClient):
         venue : TradingVenue
             The trading venue
         x1 : str
-            The granularity of the date
+            The granularity of the data
         ordering : str, optional
             Enable to only return the ordering price
         date_from : datetime, optional
@@ -50,7 +50,7 @@ class OHLC(_ApiClient):
 
         Returns
         -------
-        dict or dataframe
+        Union[dict, pandas.dataframe]
             Either the raw response json data (as dict) or a pandas dataframe
 
         """
