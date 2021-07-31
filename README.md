@@ -176,4 +176,3 @@ data = ohlc.get_data(instrument=, venue=, x1=,
                      as_df=True)  # these params are optional (default values are displayed here)
 
 ```
-

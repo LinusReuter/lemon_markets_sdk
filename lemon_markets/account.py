@@ -29,7 +29,8 @@ class Account:
 
     DEFAULT_API_URL: str
 
-    def __init__(self, client_id: str, client_secret: str, trading_type: str = 'paper'):
+    def __init__(self, client_id: str, client_secret: str,
+                 trading_type: str = 'paper'):
         """
         Initialise with client_id and client_secret.
 
@@ -72,7 +73,8 @@ class Account:
         self._access_token_type = data.get("token_type")
         if self._access_token_type not in ["bearer"]:
             raise LemonConnectionException("Error: unknown token type")
-        self._access_token_expires = int(time.time()) + data.get("expires_in") - 60
+        self._access_token_expires = int(
+            time.time()) + data.get("expires_in") - 60
 
     @property
     def access_token(self) -> str:

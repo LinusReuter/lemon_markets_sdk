@@ -118,7 +118,8 @@ class Order:
         try:
             status_ = OrderStatus(data.get('status'))
         except (ValueError, KeyError):
-            raise ValueError('Unexpected instrument type: %r' % data.get('type'))
+            raise ValueError('Unexpected instrument type: %r' %
+                             data.get('type'))
 
         return cls(             # TODO missing properties?
             instrument=instrument,
@@ -150,7 +151,8 @@ class Order:
         try:
             status_ = OrderStatus(data.get('status'))
         except (ValueError, KeyError):
-            raise ValueError('Unexpected instrument type: %r' % data.get('type'))
+            raise ValueError('Unexpected instrument type: %r' %
+                             data.get('type'))
         self.status = status_
         self.average_price = data.get('average_price')
         self.created_at = data.get('created_at')
@@ -163,7 +165,8 @@ class Orders(_ApiClient):
     """Access orders for this space."""
 
     _space: Space
-    orders = {}  # Structures all orders in a dict containing a dict (the index is the uuid) of orders for each last known order status.
+    # Structures all orders in a dict containing a dict (the index is the uuid) of orders for each last known order status.
+    orders = {}
 
     def __init__(self, account: Account, space: Space):
         """
@@ -214,8 +217,10 @@ class Orders(_ApiClient):
 
         """
         endpoint = f"spaces/{self._space.uuid}/orders/"
-        data = {"isin": instrument.isin, "valid_until": datetime_to_timestamp(valid_until),
-                "side": side, "quantity": quantity}
+        data = {
+            "isin": instrument.isin,
+            "valid_until": datetime_to_timestamp(valid_until),
+            "side": side, "quantity": quantity}
         if stop_price is not None:
             data['stop_price'] = stop_price
         if limit_price is not None:
@@ -326,7 +331,8 @@ class Orders(_ApiClient):
         endpoint = f"spaces/{self._space.uuid}/orders/"
         params = {}
         if created_at_until is not None:
-            params['created_at_until'] = datetime_to_timestamp(created_at_until)
+            params['created_at_until'] = datetime_to_timestamp(
+                created_at_until)
         if created_at_from is not None:
             params['created_at_from'] = datetime_to_timestamp(created_at_from)
         if side is not None:
@@ -362,7 +368,9 @@ class Orders(_ApiClient):
                 self.orders['EXPIRED'].pop(uuid)
 
             isin = o["instrument"].get("isin")
-            instrument = Instruments(self._account).list_instruments(search=isin)[0]
+            instrument = Instruments(
+                self._account).list_instruments(
+                search=isin)[0]
             order = Order.from_response(instrument, o)
             self.orders[order.status.name].update({order.uuid: order})
 

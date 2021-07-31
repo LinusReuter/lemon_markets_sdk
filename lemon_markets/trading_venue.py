@@ -27,7 +27,8 @@ class TradingVenues(_ApiClient):
         """Load the list of trading venues."""
         data = self._request(endpoint='trading-venues/')
         data_rows = data.get("results")
-        self.trading_venues = [TradingVenue.from_response(self, data) for data in data_rows]
+        self.trading_venues = [TradingVenue.from_response(
+            self, data) for data in data_rows]
 
     def get_opening_days(self, mic):
         # TODO unpolished (returns raw json reponse)
@@ -130,12 +131,14 @@ class TradingVenue:
 
         for data in self.opening_days:
             if day == data.get('day_iso'):
-                return timestamp_to_datetime(data.get("closing_time")) - current_time()
+                return timestamp_to_datetime(
+                    data.get("closing_time")) - current_time()
 
         self.get_opening_days()
         for data in self.opening_days:
             if day == data.get('day_iso'):
-                return timestamp_to_datetime(data.get("closing_time")) - current_time()
+                return timestamp_to_datetime(
+                    data.get("closing_time")) - current_time()
 
         return timedelta()
 
@@ -156,12 +159,14 @@ class TradingVenue:
 
         for data in self.opening_days:
             if day == data.get('day_iso'):
-                return timestamp_to_datetime(data.get("opening_time")) - current_time()
+                return timestamp_to_datetime(
+                    data.get("opening_time")) - current_time()
 
         self.get_opening_days()
         for data in self.opening_days:
             if day == data.get('day_iso'):
-                return timestamp_to_datetime(data.get("opening_time")) - current_time()
+                return timestamp_to_datetime(
+                    data.get("opening_time")) - current_time()
 
         return timedelta()
 
@@ -176,4 +181,5 @@ class TradingVenue:
             The open days of the week
 
         """
-        self.opening_days = self.request_class.get_opening_days(self.mic).get("results")
+        self.opening_days = self.request_class.get_opening_days(
+            self.mic).get("results")

@@ -1,5 +1,4 @@
 from datetime import datetime
-from datetime import timedelta
 from typing import Union
 
 
@@ -23,7 +22,7 @@ def timestamp_to_datetime(ts: Union[int, float]) -> datetime:
 
 def datetime_to_timestamp(dt: datetime) -> float:
     """
-    Converts datetime to unix timestamp.
+    Convert datetime to unix timestamp.
 
     Parameters
     ----------
@@ -34,13 +33,13 @@ def datetime_to_timestamp(dt: datetime) -> float:
     -------
     float
         The unix timestamp
+
     """
     return dt.timestamp()
 
 
 def current_time() -> datetime:  # gets time in local timezone
-    """Returns timezone-aware current time as datetime"""
-
+    """Return timezone-aware current time as datetime."""
     return datetime.now().astimezone()
 
 

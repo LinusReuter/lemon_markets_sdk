@@ -36,11 +36,14 @@ class _ApiClient:
                 else:
                     next = data['next']
         except requests.Timeout:
-            raise LemonConnectionException("Network Timeout on url: %s" % endpoint)
+            raise LemonConnectionException(
+                "Network Timeout on url: %s" % endpoint)
 
         return results
 
-    def _request(self, endpoint, method='GET', data=None, params=None, url_prefix=True):
+    def _request(
+            self, endpoint, method='GET', data=None, params=None,
+            url_prefix=True):
         method = method.lower()
         if url_prefix:
             url = self._endpoint+endpoint
@@ -50,15 +53,19 @@ class _ApiClient:
 
         try:
             if method == 'get':
-                response = requests.get(url=url, params=params, headers=headers)
+                response = requests.get(
+                    url=url, params=params, headers=headers)
             elif method == 'post':
-                response = requests.post(url=url, data=data, params=params, headers=headers)
+                response = requests.post(
+                    url=url, data=data, params=params, headers=headers)
             elif method == 'put':
                 response = requests.put(url=url, headers=headers)
             elif method == 'patch':
-                response = requests.patch(url=url, data=data, params=params, headers=headers)
+                response = requests.patch(
+                    url=url, data=data, params=params, headers=headers)
             elif method == 'delete':
-                response = requests.delete(url=url, params=params, headers=headers)
+                response = requests.delete(
+                    url=url, params=params, headers=headers)
             else:
                 raise ValueError('Unknown method: %r' % method)
 
@@ -68,7 +75,8 @@ class _ApiClient:
             raise LemonConnectionException("Network Timeout on url: %s" % url)
 
         if response.status_code > 399:
-            raise LemonAPIException(status=response.status_code, errormessage=response.reason)
+            raise LemonAPIException(
+                status=response.status_code, errormessage=response.reason)
 
         if method != 'delete':
             data = json.loads(response.content)

@@ -66,5 +66,8 @@ class Portfolio(_ApiClient):
         self.positions = []
         for data in data_rows:
             isin = data["instrument"].get("isin")
-            instrument = Instruments(self._account).list_instruments(search=isin)[0]
-            self.positions.append(Position.from_response(instrument=instrument, data=data))
+            instrument = Instruments(
+                self._account).list_instruments(
+                search=isin)[0]
+            self.positions.append(Position.from_response(
+                instrument=instrument, data=data))

@@ -25,8 +25,10 @@ class OHLC(_ApiClient):
         """
         super().__init__(account=account)
 
-    def get_data(self, instrument: Instrument, venue: TradingVenue, x1: str, ordering: str = None,
-                 date_from: datetime = None, date_until: datetime = None, as_df: bool = True):
+    def get_data(
+            self, instrument: Instrument, venue: TradingVenue, x1: str,
+            ordering: str = None, date_from: datetime = None,
+            date_until: datetime = None, as_df: bool = True):
         # TODO what does the x1 param and ordering mean?
         """
         Get OHLC data on the specified instrument.
@@ -57,7 +59,8 @@ class OHLC(_ApiClient):
         endpoint = f"trading-venues/{venue.mic}/instruments/{instrument.isin}/data/ohlc/{x1}/"
         params = {}
         if ordering is not None:
-            params['ordering'] = True  # TODO what is the value the server accepts as True?
+            # TODO what is the value the server accepts as True?
+            params['ordering'] = True
         if date_from is not None:
             params['date_from'] = int(datetime_to_timestamp(date_from))
         if date_until is not None:
@@ -71,7 +74,8 @@ class OHLC(_ApiClient):
             to_tz = datetime.now().astimezone().tzinfo
             print(from_tz, to_tz)
             df = pd.DataFrame(results)
-            df['t'] = pd.to_datetime(df['t'], unit='s').dt.tz_localize(from_tz).dt.tz_convert(to_tz)
+            df['t'] = pd.to_datetime(df['t'], unit='s').dt.tz_localize(
+                from_tz).dt.tz_convert(to_tz)
             df.set_index('t', inplace=True)
             if ordering == '-date':
                 df.sort_index(ascending=False, inplace=True)

@@ -52,7 +52,8 @@ class State(_ApiClient):
     def get_spaces(self):
         """Return a list of your spaces."""
         data_rows = self._request_paged('spaces/')
-        self._spaces = [Space.from_response(self._account, data) for data in data_rows]
+        self._spaces = [Space.from_response(
+            self._account, data) for data in data_rows]
 
     @property
     def balance(self):

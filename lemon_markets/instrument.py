@@ -76,7 +76,8 @@ class Instrument:
         try:
             type_ = InstrumentType(data.get('type'))
         except (ValueError, KeyError):
-            raise ValueError('Unexpected instrument type: %r' % data.get('type'))
+            raise ValueError('Unexpected instrument type: %r' %
+                             data.get('type'))
 
         return cls(
             isin=data.get('isin'),
