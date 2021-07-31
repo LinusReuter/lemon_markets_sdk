@@ -1,5 +1,7 @@
 # Lemon Markets API Access
 
+[![Documentation Status](https://readthedocs.org/projects/lemon-markets-api-access-poc/badge/?version=latest)](https://lemon-markets-api-access-poc.readthedocs.io/en/latest/?badge=latest)
+
 This is a Python SDK for accessing the Lemon Markets API.
 API documentation can be found here: https://docs.lemon.markets
 

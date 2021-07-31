@@ -60,7 +60,6 @@ class Portfolio(_ApiClient):
 
     def update_positions(self):
         """Update non-static portfolio data."""
-
         endpoint = f"spaces/{self._space.uuid}/portfolio/"
         data_rows = self._request_paged(endpoint=endpoint)
 

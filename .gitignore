@@ -2,6 +2,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm,windows
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm,windows
 
+### Testing ###
+unittests/test.ipynb
+
 ### vscode ###
 .vscode/*
 !.vscode/settings.json

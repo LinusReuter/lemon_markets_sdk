@@ -77,14 +77,6 @@ lemon\_markets.trading\_venue module
    :undoc-members:
    :show-inheritance:
 
-lemon\_markets.transaction module
----------------------------------
-
-.. automodule:: lemon_markets.transaction
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 
 lemon\_markets.helpers subpackage
 =================================

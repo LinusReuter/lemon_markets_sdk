@@ -1,11 +1,10 @@
 Welcome to lemon-market-api-access's documentation!
 =====================================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+Contents
+========
 
-   reference
+* :doc:`reference`
 
 
 

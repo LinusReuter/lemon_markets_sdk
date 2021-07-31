@@ -12,26 +12,25 @@ class LemonConnectionException(LemonException):
 
 
 class LemonAPIException(LemonException):
-    """Raised when the request goes through, but there is an error with the api."""
+    """
+    Indicate an error with the status of an response.
 
-    def __init__(self, status, errormessage):
-        """
-        Indicate an error with the status of an response.
+    Parameters
+    ----------
+    status : int
+        The response status that caused this error
+    errormessage : str
+        The human-readable error message
 
-        Parameters
-        ----------
-        status : int
-            The response status that caused this error
-        errormessage : str
-            The human-readable error message
+    Properties
+    ----------
+    status : int
+        The response status that caused this error
+    errormessage : str
+        The human-readable error message
 
-        Properties
-        ----------
-        status : int
-            The response status that caused this error
-        errormessage : str
-            The human-readable error message
+    """
 
-        """
+    def __init__(self, status, errormessage):       # noqa
         self.status = status
         self.errormessage = errormessage

@@ -97,15 +97,13 @@ class Space(_ApiClient):
         self._state = data.get('state')
         self.type = type_
 
-    def __post_init__(self):
-        """Dunder post init."""
+    def __post_init__(self):            # noqa
         super().__init__(account=self._account)
 
     def _update_space_state(self):
         data = self._request(f"spaces/{self.uuid}/")
         self.update_values(data)
 
-    # TODO move properties to __getattr__ dunder method
     @property
     def state(self):
         # TODO is state of type dict?
@@ -123,7 +121,7 @@ class Space(_ApiClient):
 
     @property
     def balance(self):
-        # TODO what is the type of balance
+        # TODO what is the type of balance (should be float?)
         """
         Get space balance.
 
@@ -138,7 +136,7 @@ class Space(_ApiClient):
 
     @property
     def cash_to_invest(self):
-        # TODO inst this the same as balance?
+        # TODO isnt this the same as balance?
         """
         Get cash to invest.
 
