@@ -3,7 +3,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm,windows
 
 ### Testing ###
-unittests/test.ipynb
+test.py
 
 ### vscode ###
 .vscode/*
