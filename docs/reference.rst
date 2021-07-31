@@ -89,22 +89,6 @@ lemon\_markets.transaction module
 lemon\_markets.helpers subpackage
 =================================
 
-lemon\_markets.helpers.api\_client module
------------------------------------------
-
-.. automodule:: lemon_markets.helpers.api_client
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-lemon\_markets.helpers.logging module
--------------------------------------
-
-.. automodule:: lemon_markets.helpers.logging
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 lemon\_markets.helpers.time\_helper module
 ------------------------------------------
 

@@ -1,3 +1,5 @@
+# undocumented on rtd
+
 import json
 import requests
 from typing import List
@@ -7,7 +9,6 @@ from lemon_markets.exceptions import LemonConnectionException, LemonAPIException
 
 
 class _ApiClient:
-    """Base class for authenticated HTTPS requests."""
 
     def __init__(self, account: Account, endpoint: str = None):
         self._account = account
