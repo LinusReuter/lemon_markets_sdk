@@ -1,7 +1,3 @@
-import os
-import sys
-sys.path.insert(0, os.path.abspath('..'))
-from lemon_markets import __version__ as version    # PEP8 autoformatter often moves this import to the top, it must be below the sys.path.insert path though
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -13,7 +9,6 @@ from lemon_markets import __version__ as version    # PEP8 autoformatter often m
 project = "lemon-markets-api-access"
 copyright = "Linus Reuter, MIT License"
 author = "Linus Reuter"
-release = version
 
 # -- General configuration ---------------------------------------------------
 
