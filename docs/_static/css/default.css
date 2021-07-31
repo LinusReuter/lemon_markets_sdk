@@ -2,3 +2,12 @@
 .py.attribute {
     display: none !important;
 }
+
+/* make poroperties full black */
+.simple > dt {
+    color: #000 !important;
+}
+
+.simple > dt > span {
+    color: #555 !important;
+}

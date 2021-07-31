@@ -106,7 +106,7 @@ class Instruments(_ApiClient):
         """
         super().__init__(account=account)
 
-    def list_instruments(self, **kwargs) -> List[Instrument]:
+    def list_instruments(self, *args, **kwargs) -> List[Instrument]:
         # TODO what does search mean?
         """
         List all instruments with matching criteria.
@@ -128,5 +128,6 @@ class Instruments(_ApiClient):
             List of instruments matching your query
 
         """
+        assert not args, 'Please supply the arguments with a keyword i.e. `tradable=True` instead of a positional `True`.'
         data_rows = self._request_paged('instruments/', params=kwargs)
         return [Instrument._from_response(data) for data in data_rows]
