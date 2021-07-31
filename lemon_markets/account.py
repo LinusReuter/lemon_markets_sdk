@@ -27,7 +27,7 @@ class Account:
     _access_token_type: str
     _access_token_expires: int
 
-    DEFAULT_API_URL: str
+    _DEFAULT_API_URL: str
 
     def __init__(self, client_id: str, client_secret: str,
                  trading_type: str = 'paper'):
@@ -53,7 +53,7 @@ class Account:
         self._client_secret = client_secret
 
         if trading_type.lower() == 'paper':
-            self.DEFAULT_API_URL = DEFAULT_PAPER_REST_API_URL
+            self._DEFAULT_API_URL = DEFAULT_PAPER_REST_API_URL
         elif trading_type.lower() == 'money':
             raise Exception("Real money trading is not available yet!")
             self.DEFAULT_API_URL = DEFAULT_MONEY_REST_API_URL
@@ -109,7 +109,7 @@ class Account:
         return self._access_token_type
 
     @property
-    def _authorization(self):
+    def _authorization(self) -> dict:
         if self._access_token_type == "bearer":
             s = "Bearer " + self.access_token
 

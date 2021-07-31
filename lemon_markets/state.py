@@ -56,7 +56,7 @@ class State(_ApiClient):
             self._account, data) for data in data_rows]
 
     @property
-    def balance(self):
+    def balance(self) -> float:
         """
         Get the balance of a space.
 
@@ -70,7 +70,7 @@ class State(_ApiClient):
         return self._balance
 
     @property
-    def state(self):
+    def state(self) -> dict:
         """
         Get the state of the space.
 
@@ -84,7 +84,7 @@ class State(_ApiClient):
         return self._state
 
     @property
-    def spaces(self):
+    def spaces(self) -> List[Space]:
         """
         Get the spaces of your account.
 

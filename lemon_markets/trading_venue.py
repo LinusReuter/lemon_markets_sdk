@@ -30,7 +30,7 @@ class TradingVenues(_ApiClient):
         self.trading_venues = [TradingVenue.from_response(
             self, data) for data in data_rows]
 
-    def get_opening_days(self, mic):
+    def get_opening_days(self, mic) -> dict:
         # TODO unpolished (returns raw json reponse)
         """
         Get the days till opening of venue.
@@ -81,7 +81,7 @@ class TradingVenue:
         )
 
     @property
-    def is_open(self):
+    def is_open(self) -> bool:
         """
         Check if the venue is open.
 
@@ -115,7 +115,7 @@ class TradingVenue:
         return False
 
     @property
-    def time_until_close(self):
+    def time_until_close(self) -> timedelta:
         """
         Get time until close of the venue.
 
@@ -143,7 +143,7 @@ class TradingVenue:
         return timedelta()
 
     @property
-    def time_until_open(self):
+    def time_until_open(self) -> timedelta:
         """
         Get time until the market opens.
 
@@ -171,7 +171,7 @@ class TradingVenue:
         return timedelta()
 
     def get_opening_days(self):
-        # TODO am i right here? just a guess really..
+        # TODO am i right here? just a guess really.. (type hint missing)
         """
         Get the open days of a week.
 

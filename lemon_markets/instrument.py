@@ -10,15 +10,15 @@ class InstrumentType(Enum):
     """
     Class for different instrument types.
 
-    Properties
+    Attributes
     ----------
-    STOCK : 'stock'
+    STOCK
         Instrument of type stock
-    BOND : 'bond'
+    BOND
         Of type bond
-    FUND : 'fund'
+    FUND
         Of type fund
-    WARRANT : 'warrant'
+    WARRANT
         Of type warrant
 
     """
@@ -35,7 +35,7 @@ class Instrument:
     """
     Represents an instrument.
 
-    Properties
+    Attributes
     ----------
     isin : str
         The isin identifier of the instrument
@@ -51,7 +51,7 @@ class Instrument:
         Abbreviation of the reported currency
     tradable : str
         Whether the instrument can be traded
-    trading_venues : list
+    trading_venues : List[TradingVenue]
         Places where this instrument is traded
 
     Raises

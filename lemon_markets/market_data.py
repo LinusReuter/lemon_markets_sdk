@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
-import pandas as pd
+from pandas import DataFrame as DataFrame, to_datetime
+from typing import Union
 
 from lemon_markets.helpers.api_client import _ApiClient
 from lemon_markets.account import Account
@@ -28,7 +29,7 @@ class OHLC(_ApiClient):
     def get_data(
             self, instrument: Instrument, venue: TradingVenue, x1: str,
             ordering: str = None, date_from: datetime = None,
-            date_until: datetime = None, as_df: bool = True):
+            date_until: datetime = None, as_df: bool = True) -> Union[dict, DataFrame]:
         # TODO what does the x1 param and ordering mean?
         """
         Get OHLC data on the specified instrument.
@@ -52,7 +53,7 @@ class OHLC(_ApiClient):
 
         Returns
         -------
-        Union[dict, pandas.dataframe]
+        Union[dict, pandas.DataFrame]
             Either the raw response json data (as dict) or a pandas dataframe
 
         """
@@ -73,8 +74,8 @@ class OHLC(_ApiClient):
             from_tz = timezone.utc
             to_tz = datetime.now().astimezone().tzinfo
             print(from_tz, to_tz)
-            df = pd.DataFrame(results)
-            df['t'] = pd.to_datetime(df['t'], unit='s').dt.tz_localize(
+            df = DataFrame(results)
+            df['t'] = to_datetime(df['t'], unit='s').dt.tz_localize(
                 from_tz).dt.tz_convert(to_tz)
             df.set_index('t', inplace=True)
             if ordering == '-date':

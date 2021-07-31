@@ -1,7 +1,7 @@
 from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Union
+from typing import Union, Tuple
 
 from lemon_markets.helpers.api_client import _ApiClient
 from lemon_markets.account import Account
@@ -14,19 +14,19 @@ class OrderStatus(Enum):
     """
     Class for different order statuses.
 
-    Properties
+    Attributes
     ----------
-    INACTIVE : 'inactive'
+    INACTIVE
         Order is inactive
-    ACTIVATED : 'activated'
+    ACTIVATED
         Order is activated
-    IN_PROGRESS : 'in_progress'
+    IN_PROGRESS
         Order is in in progress
-    EXECUTED : 'executed'
+    EXECUTED
         Order is done executed
-    DELETED : 'deleted'
+    DELETED
         Order was deleted
-    EXPIRED : 'expired'
+    EXPIRED
         Order expired
 
     """
@@ -44,7 +44,7 @@ class Order:
     """
     Dataclass representing an order.
 
-    Properties
+    Attributes
     ----------
     instrument : Instrument
         The instrument that was ordered
@@ -179,6 +179,11 @@ class Orders(_ApiClient):
         space : Space
             The space object
 
+        Attributes
+        ----------
+        orders : Mapping[str, Mapping[str, Order]]
+            The orders. In a dict grouped by state and uuid.
+
         """
         self._space = space
         super().__init__(account=account)
@@ -232,7 +237,7 @@ class Orders(_ApiClient):
         self.orders[status.name].update({order.uuid: order})
         return order
 
-    def update_order(self, order: Order):
+    def update_order(self, order: Order) -> Tuple[bool, OrderStatus]:
         """
         Update the order status.
 
@@ -260,7 +265,7 @@ class Orders(_ApiClient):
         status_changed = (old_status != new_status)
         return status_changed, new_status
 
-    def activate_order(self, order: Order):
+    def activate_order(self, order: Order) -> bool:
         """
         Activate an order.
 
@@ -284,19 +289,20 @@ class Orders(_ApiClient):
         self.orders[new_status].update({order.uuid: order})
         return new_status == 'ACTIVATED'
 
-    def delete_order(self, order: Order):
+    def delete_order(self, order: Order) -> Tuple[bool, OrderStatus]:
         """
         Delete specified order.
 
         Parameters
         ----------
         order : Order
-            [description]
+            The order to delete
 
         Returns
         -------
-        [type]
-            [description]
+        Tuple[bool, OrderStatus]
+            Tuple in which the bool indicates success,
+            and the OrderStatus is the new status of the order
 
         """
         endpoint = f"spaces/{self._space.uuid}/orders/{order.uuid}/"

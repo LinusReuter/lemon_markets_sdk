@@ -12,24 +12,7 @@ class LemonConnectionException(LemonException):
 
 
 class LemonAPIException(LemonException):
-    """
-    Indicate an error with the status of an response.
-
-    Parameters
-    ----------
-    status : int
-        The response status that caused this error
-    errormessage : str
-        The human-readable error message
-
-    Properties
-    ----------
-    status : int
-        The response status that caused this error
-    errormessage : str
-        The human-readable error message
-
-    """
+    """Indicate an error with the status of an response."""
 
     def __init__(self, status, errormessage):       # noqa
         self.status = status

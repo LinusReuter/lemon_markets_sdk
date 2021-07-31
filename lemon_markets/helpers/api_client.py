@@ -12,7 +12,7 @@ class _ApiClient:
 
     def __init__(self, account: Account, endpoint: str = None):
         self._account = account
-        self._endpoint = endpoint or self._account.DEFAULT_API_URL
+        self._endpoint = endpoint or self._account._DEFAULT_API_URL
 
     def _request_paged(self, endpoint, data_=None, params=None) -> List[dict]:
 
@@ -43,7 +43,7 @@ class _ApiClient:
 
     def _request(
             self, endpoint, method='GET', data=None, params=None,
-            url_prefix=True):
+            url_prefix=True) -> dict:
         method = method.lower()
         if url_prefix:
             url = self._endpoint+endpoint

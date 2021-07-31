@@ -9,12 +9,12 @@ class SpaceType(Enum):
     """
     Type of the space.
 
-    Properties
+    Attributes
     ----------
-    STRATEGY : 'strategy'
-        Type is strategy
-    APP : 'app'
-        Type is app
+    STRATEGY
+        Type is `strategy`
+    APP
+        Type is `app`
 
     """
 
@@ -105,7 +105,7 @@ class Space(_ApiClient):
         self.update_values(data)
 
     @property
-    def state(self):
+    def state(self) -> dict:
         # TODO is state of type dict?
         """
         Get the space of the state.
@@ -120,7 +120,7 @@ class Space(_ApiClient):
         return self._state
 
     @property
-    def balance(self):
+    def balance(self) -> float:
         # TODO what is the type of balance (should be float?)
         """
         Get space balance.
@@ -135,7 +135,7 @@ class Space(_ApiClient):
         return float(self._state.get("balance"))
 
     @property
-    def cash_to_invest(self):
+    def cash_to_invest(self) -> float:
         # TODO isnt this the same as balance?
         """
         Get cash to invest.
