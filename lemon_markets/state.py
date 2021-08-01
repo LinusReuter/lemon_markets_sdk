@@ -1,3 +1,5 @@
+"""Module for showing the state of you account."""
+
 from typing import List
 
 from lemon_markets.helpers.api_client import _ApiClient
@@ -8,6 +10,11 @@ from lemon_markets.space import Space
 class State(_ApiClient):
     """
     Represents the state of an account.
+
+    Parameters
+    ----------
+    account : Account
+        The account with your space's credentials.
 
     Raises
     ------
@@ -20,16 +27,7 @@ class State(_ApiClient):
     _balance: float = None
     _spaces: List[Space] = None
 
-    def __init__(self, account: Account):
-        """
-        Initialise using the account.
-
-        Parameters
-        ----------
-        account : Account
-            The account with your space's credentials.
-
-        """
+    def __init__(self, account: Account):       # noqa
         super().__init__(account)
 
     def get_state(self):
@@ -52,7 +50,7 @@ class State(_ApiClient):
     def get_spaces(self):
         """Return a list of your spaces."""
         data_rows = self._request_paged('spaces/')
-        self._spaces = [Space.from_response(
+        self._spaces = [Space._from_response(
             self._account, data) for data in data_rows]
 
     @property

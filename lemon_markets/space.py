@@ -1,3 +1,5 @@
+"""Module for managing spaces."""
+
 from lemon_markets.helpers.api_client import _ApiClient
 from lemon_markets.account import Account
 
@@ -42,23 +44,7 @@ class Space(_ApiClient):
     _account: Account = None
 
     @classmethod
-    def from_response(cls, account: Account, data: dict):
-        """
-        Fill propery values from response.
-
-        Parameters
-        ----------
-        account : Account
-            The account.
-        data : dict
-            The response data
-
-        Raises
-        ------
-        ValueError
-            If the space type is invalid
-
-        """
+    def _from_response(cls, account: Account, data: dict):
         try:
             type_ = SpaceType(data.get('type'))
         except (ValueError, KeyError):

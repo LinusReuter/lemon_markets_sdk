@@ -1,3 +1,4 @@
+"""Various helper functions for dealing with time."""
 from datetime import datetime
 from typing import Union
 

@@ -1,3 +1,5 @@
+"""Module for placing, listing and deleting orders."""
+
 from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
@@ -97,24 +99,8 @@ class Order:
     trading_venue: dict = None      # TODO data type?
 
     @classmethod
-    def from_response(cls, instrument: Instrument, data: dict):
-        # TODO why are instrument and data seperate params
-        """
-        Create object from response data.
+    def _from_response(cls, instrument: Instrument, data: dict):
 
-        Parameters
-        ----------
-        instrument : Instrument
-            The instrument of the order
-        data : dict
-            Additional request data
-
-        Raises
-        ------
-        ValueError
-            Raised if Instrumnt type is invalid
-
-        """
         try:
             status_ = OrderStatus(data.get('status'))
         except (ValueError, KeyError):
@@ -162,29 +148,28 @@ class Order:
 
 
 class Orders(_ApiClient):
-    """Access orders for this space."""
+    """
+    Access orders for this space.
+
+    Parameters
+    ----------
+    account : Account
+        The account object
+    space : Space
+        The space object
+
+    Attributes
+    ----------
+    orders : Mapping[str, Mapping[str, Order]]
+        The orders. In a dict grouped by state and uuid.
+
+    """
 
     _space: Space
     # Structures all orders in a dict containing a dict (the index is the uuid) of orders for each last known order status.
     orders = {}
 
-    def __init__(self, account: Account, space: Space):
-        """
-        Initalise with an your account and a space.
-
-        Parameters
-        ----------
-        account : Account
-            The account object
-        space : Space
-            The space object
-
-        Attributes
-        ----------
-        orders : Mapping[str, Mapping[str, Order]]
-            The orders. In a dict grouped by state and uuid.
-
-        """
+    def __init__(self, account: Account, space: Space):     # noqa
         self._space = space
         super().__init__(account=account)
         for status in OrderStatus:
@@ -232,7 +217,7 @@ class Orders(_ApiClient):
             data['limit_price'] = limit_price
 
         data = self._request(endpoint=endpoint, method="POST", data=data)
-        order = Order.from_response(instrument, data)
+        order = Order._from_response(instrument, data)
         status = order.status
         self.orders[status.name].update({order.uuid: order})
         return order
@@ -311,12 +296,12 @@ class Orders(_ApiClient):
         return status_changed, new_status
 
     # requests all orders matching the paramerts and adds them to the orders dict
-    def get_orders(self,
-                   created_at_until: datetime = None,
-                   created_at_from: datetime = None,
-                   side: str = None,
-                   type: str = None,
-                   status: str = None):
+    def fetch_orders(self,
+                     created_at_until: datetime = None,
+                     created_at_from: datetime = None,
+                     side: str = None,
+                     type: str = None,
+                     status: str = None):
         """
         Return orders by criteria.
 
@@ -377,7 +362,7 @@ class Orders(_ApiClient):
             instrument = Instruments(
                 self._account).list_instruments(
                 search=isin)[0]
-            order = Order.from_response(instrument, o)
+            order = Order._from_response(instrument, o)
             self.orders[order.status.name].update({order.uuid: order})
 
     def clean_orders(self):  # removes all executed, deleted or expired orders in the orders dict

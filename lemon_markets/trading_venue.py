@@ -1,3 +1,5 @@
+"""Module for listing trading venues and their opening/closing times."""
+
 from dataclasses import dataclass
 from datetime import timedelta
 
@@ -7,78 +9,50 @@ from lemon_markets.helpers.time_helper import current_time, timestamp_to_datetim
 
 
 class TradingVenues(_ApiClient):
-    """Available trading venues."""
+    """
+    Available trading venues.
+
+    Parameters
+    ----------
+    account : Account
+        Your auth data
+
+    """
 
     trading_venues = None
 
-    def __init__(self, account: Account):
-        """
-        Initialise using the account.
-
-        Parameters
-        ----------
-        account : Account
-            Your auth data
-
-        """
+    def __init__(self, account: Account):       # noqa
         super().__init__(account=account)
 
     def get_venues(self):
         """Load the list of trading venues."""
         data = self._request(endpoint='trading-venues/')
         data_rows = data.get("results")
-        self.trading_venues = [TradingVenue.from_response(
+        self.trading_venues = [TradingVenue._from_response(
             self, data) for data in data_rows]
-
-    def get_opening_days(self, mic) -> dict:
-        # TODO unpolished (returns raw json reponse)
-        """
-        Get the days till opening of venue.
-
-        Parameters
-        ----------
-        mic : str
-            Id of the venue
-
-        Returns
-        -------
-        dict
-            Raw response data
-
-        """
-        return self._request(endpoint=f"trading-venues/{mic}/opening-days")
 
 
 @dataclass()
-class TradingVenue:
+class TradingVenue(_ApiClient):
     """A trading venue."""
 
     name: str = None
     title: str = None
     mic: str = None
     opening_days: list = None
-    request_class: TradingVenues = None
+    _account: Account = None
 
     @classmethod
-    def from_response(cls, request_class, data: dict):
-        # TODO should the from_response methods be made private?
-        """
-        Fill venu data from response.
-
-        Parameters
-        ----------
-        request_class : TradingVenues
-            The TradingVenues object that returned this TradingVenue
-        data : dict
-            the response data to fill in
-
-        """
+    def _from_response(cls, account, data: dict):
         return cls(
-            request_class=request_class,
+            _account=account,
             name=data.get('name'),
             title=data.get('title'),
             mic=data.get('mic')
         )
+
+    def __post_init__(self):            # noqa
+        super().__init__(self._account)
 
     @property
     def is_open(self) -> bool:
@@ -181,5 +155,5 @@ class TradingVenue:
             The open days of the week
 
         """
-        self.opening_days = self.request_class.get_opening_days(
-            self.mic).get("results")
+        self.opening_days = self._request(
+            endpoint=f"trading-venues/{self.mic}/opening-days").get("results")

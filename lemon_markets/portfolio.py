@@ -1,3 +1,5 @@
+"""Module for handling your portfolio."""
+
 from dataclasses import dataclass
 
 from lemon_markets.helpers.api_client import _ApiClient
@@ -16,19 +18,7 @@ class Position:
     latest_total_value: float = None
 
     @classmethod
-    def from_response(cls, instrument: Instrument, data: dict):
-        # TODO again, why seperate params?
-        """
-        Populate data from request data.
-
-        Parameters
-        ----------
-        instrument : Instrument
-            The instrument of the position
-        data : dict
-            The reponse data
-
-        """
+    def _from_response(cls, instrument: Instrument, data: dict):
         return cls(
             instrument=instrument,
             quantity=data.get('quantity'),
@@ -38,23 +28,22 @@ class Position:
 
 
 class Portfolio(_ApiClient):
-    """Class representing the space's portfolio."""
+    """
+    Class representing the space's portfolio.
+
+    Parameters
+    ----------
+    account : Account
+        The account
+    space : Space
+        The space
+
+    """
 
     _space: Space
     positions: list = []
 
-    def __init__(self, account: Account, space: Space):
-        """
-        Initialise with your account and space.
-
-        Parameters
-        ----------
-        account : Account
-            The account
-        space : Space
-            The space
-
-        """
+    def __init__(self, account: Account, space: Space):     # noqa
         self._space = space
         super().__init__(account=account)
 
@@ -69,5 +58,5 @@ class Portfolio(_ApiClient):
             instrument = Instruments(
                 self._account).list_instruments(
                 search=isin)[0]
-            self.positions.append(Position.from_response(
+            self.positions.append(Position._from_response(
                 instrument=instrument, data=data))

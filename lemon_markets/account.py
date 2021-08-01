@@ -1,3 +1,5 @@
+"""The entry point of all your scripts."""
+
 import time
 import requests
 import json

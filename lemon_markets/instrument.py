@@ -1,5 +1,8 @@
+"""Module for working with instruments."""
+
 from lemon_markets.helpers.api_client import _ApiClient
 from lemon_markets.account import Account
+from lemon_markets.trading_venue import TradingVenue
 
 from enum import Enum
 from dataclasses import dataclass
@@ -69,10 +72,10 @@ class Instrument:
     symbol: str = None
     currency: str = None
     tradable: str = None
-    trading_venues: list = None
+    trading_venues: List[TradingVenue] = None
 
     @classmethod
-    def _from_response(cls, data: dict):
+    def _from_response(cls, account: Account, data: dict):
         try:
             type_ = InstrumentType(data.get('type'))
         except (ValueError, KeyError):
@@ -88,27 +91,24 @@ class Instrument:
             symbol=data.get('symbol'),
             currency=data.get('currency'),
             tradable=data.get('tradable'),
-            trading_venues=data.get('trading_venues')
+            trading_venues=[TradingVenue._from_response(account, res) for res in data.get('trading_venues')]
         )
 
 
 class Instruments(_ApiClient):
-    """Class for searching instruments."""
-
-    def __init__(self, account: Account):
-        """
-        Initialise with an account.
+    """Class for searching instruments.
 
         Parameters
         ----------
-        account : Account
-            The account object
+        account: Account
+          The account object
 
         """
+
+    def __init__(self, account: Account):       # noqa
         super().__init__(account=account)
 
     def list_instruments(self, *args, **kwargs) -> List[Instrument]:
-        # TODO what does search mean?
         """
         List all instruments with matching criteria.
 
@@ -130,5 +130,5 @@ class Instruments(_ApiClient):
 
         """
         assert not args, 'Please supply the arguments with a keyword i.e. `tradable=True` instead of a positional `True`.'
-        data_rows = self._request_paged('instruments/', params=kwargs)
-        return [Instrument._from_response(data) for data in data_rows]
+        result_pages = self._request_paged('instruments/', params=kwargs)
+        return [Instrument._from_response(self._account, res) for res in result_pages]

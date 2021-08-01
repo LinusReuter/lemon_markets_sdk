@@ -1,6 +1,8 @@
+"""Exceptions raised by the SDK."""
+
 
 class LemonException(Exception):
-    """Baseclass for exceptions raised by the sdk."""
+    """Baseclass for exceptions raised by the SDK."""
 
     pass
 

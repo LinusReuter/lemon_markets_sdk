@@ -1,3 +1,5 @@
+"""Module for accessing market data."""
+
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pandas import DataFrame as DataFrame, to_datetime
@@ -12,18 +14,17 @@ from lemon_markets.trading_venue import TradingVenue
 
 @dataclass()
 class OHLC(_ApiClient):
-    """Class to access OHLC data."""
+    """
+    Class to access OHLC data.
 
-    def __init__(self, account: Account):
-        """
-        Initialise with you account.
+    Parameters
+    ----------
+    account : Account
+        The account object containing your credentials
 
-        Parameters
-        ----------
-        account : Account
-            The account object containing your credentials
+    """
 
-        """
+    def __init__(self, account: Account):       # noqa
         super().__init__(account=account)
 
     def get_data(
@@ -41,9 +42,9 @@ class OHLC(_ApiClient):
         venue : TradingVenue
             The trading venue
         x1 : str
-            The granularity of the data
+            The granularity of the data. Either `M1`, `H1` or `D1`
         ordering : str, optional
-            Enable to only return the ordering price
+            The ordering of the data
         date_from : datetime, optional
             Limit the data to after this point in time
         date_until : datetime, optional
@@ -60,22 +61,22 @@ class OHLC(_ApiClient):
         endpoint = f"trading-venues/{venue.mic}/instruments/{instrument.isin}/data/ohlc/{x1}/"
         params = {}
         if ordering is not None:
-            # TODO what is the value the server accepts as True?
-            params['ordering'] = True
+            params['ordering'] = ordering
         if date_from is not None:
             params['date_from'] = int(datetime_to_timestamp(date_from))
         if date_until is not None:
             params['date_until'] = int(datetime_to_timestamp(date_until))
-        results = self._request(endpoint=endpoint, params=params)['results']
+        results = self._request(endpoint=endpoint, params=params)['results']       # TODO make it _request_paged
 
         if not as_df:
             return results
         else:
+            # TODO breaks if response is empty
             from_tz = timezone.utc
             to_tz = datetime.now().astimezone().tzinfo
             print(from_tz, to_tz)
             df = DataFrame(results)
-            df['t'] = to_datetime(df['t'], unit='s').dt.tz_localize(
+            df['t'] = to_datetime(df['t'], unit='s').dt.tz_localize(  # TODO this line
                 from_tz).dt.tz_convert(to_tz)
             df.set_index('t', inplace=True)
             if ordering == '-date':

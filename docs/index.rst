@@ -5,6 +5,7 @@ Contents
 ========
 
 * :doc:`reference`
+* :doc:`install`
 
 
 

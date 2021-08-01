@@ -23,7 +23,7 @@ class _ApiClient:
         try:
 
             while True:
-
+                
                 if next is not None:
                     data = self._request(next, data=data_, url_prefix=False)
                 else:
@@ -74,7 +74,7 @@ class _ApiClient:
         except requests.Timeout:
             raise LemonConnectionException("Network Timeout on url: %s" % url)
 
-        if response.status_code > 399:
+        if response.status_code > 399:      # will this ever be triggered? raise_for_status takes care of this case, or not?
             raise LemonAPIException(
                 status=response.status_code, errormessage=response.reason)
 
