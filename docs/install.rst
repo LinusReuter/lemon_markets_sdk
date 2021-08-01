@@ -43,7 +43,7 @@ To install a prerelease version from Test-PyPi, use these commands:
 
 
 3. Directly from GitHub (bleeding-edge version for contributing)
-------------------------------------------------------
+----------------------------------------------------------------
 
 To install the latest version from GitHub, clone the repository by executing:
 
