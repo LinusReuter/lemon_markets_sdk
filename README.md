@@ -1,5 +1,8 @@
 # Lemon Markets API Access
 
+[![Documentation Status](https://readthedocs.org/projects/lemon-markets-api-access-poc/badge/?version=latest)](https://lemon-markets-api-access-poc.readthedocs.io/en/latest/?badge=latest)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/leonhma/lemon-markets-api-access/blob/master/docs/lemon_markets.ipynb)
+
 This is a Python SDK for accessing the Lemon Markets API.
 API documentation can be found here: https://docs.lemon.markets
 
@@ -174,4 +177,3 @@ data = ohlc.get_data(instrument=, venue=, x1=,
                      as_df=True)  # these params are optional (default values are displayed here)
 
 ```
-

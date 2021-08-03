@@ -1,17 +1,18 @@
+# undocumented on rtd
+
 import json
 import requests
-from typing import *
+from typing import List
 
 from lemon_markets.account import Account
-from lemon_markets.config import DEFAULT_PAPER_REST_API_URL
 from lemon_markets.exceptions import LemonConnectionException, LemonAPIException
 
 
-class ApiClient:
+class _ApiClient:
 
     def __init__(self, account: Account, endpoint: str = None):
         self._account = account
-        self._endpoint = endpoint or self._account.DEFAULT_API_URL
+        self._endpoint = endpoint or self._account._DEFAULT_API_URL
 
     def _request_paged(self, endpoint, data_=None, params=None) -> List[dict]:
 
@@ -22,7 +23,7 @@ class ApiClient:
         try:
 
             while True:
-
+                
                 if next is not None:
                     data = self._request(next, data=data_, url_prefix=False)
                 else:
@@ -35,29 +36,36 @@ class ApiClient:
                 else:
                     next = data['next']
         except requests.Timeout:
-            raise LemonConnectionException("Network Timeout on url: %s" % endpoint)
+            raise LemonConnectionException(
+                "Network Timeout on url: %s" % endpoint)
 
         return results
 
-    def _request(self, endpoint, method='GET', data=None, params=None, url_prefix=True):
+    def _request(
+            self, endpoint, method='GET', data=None, params=None,
+            url_prefix=True) -> dict:
         method = method.lower()
         if url_prefix:
             url = self._endpoint+endpoint
         else:
             url = endpoint
-        headers = self._account.authorization
+        headers = self._account._authorization
 
         try:
             if method == 'get':
-                response = requests.get(url=url, params=params, headers=headers)
+                response = requests.get(
+                    url=url, params=params, headers=headers)
             elif method == 'post':
-                response = requests.post(url=url, data=data, params=params, headers=headers)
+                response = requests.post(
+                    url=url, data=data, params=params, headers=headers)
             elif method == 'put':
                 response = requests.put(url=url, headers=headers)
             elif method == 'patch':
-                response = requests.patch(url=url, data=data, params=params, headers=headers)
+                response = requests.patch(
+                    url=url, data=data, params=params, headers=headers)
             elif method == 'delete':
-                response = requests.delete(url=url, params=params, headers=headers)
+                response = requests.delete(
+                    url=url, params=params, headers=headers)
             else:
                 raise ValueError('Unknown method: %r' % method)
 
@@ -66,8 +74,9 @@ class ApiClient:
         except requests.Timeout:
             raise LemonConnectionException("Network Timeout on url: %s" % url)
 
-        if response.status_code > 399:
-            raise LemonAPIException(status=response.status_code, errormessage=response.reason)
+        if response.status_code > 399:      # will this ever be triggered? raise_for_status takes care of this case, or not?
+            raise LemonAPIException(
+                status=response.status_code, errormessage=response.reason)
 
         if method != 'delete':
             data = json.loads(response.content)

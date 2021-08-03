@@ -1,45 +1,70 @@
+"""Module for listing trading venues and their opening/closing times."""
+
 from dataclasses import dataclass
+from datetime import timedelta
 
-from lemon_markets.helpers.api_client import ApiClient
+from lemon_markets.helpers.api_client import _ApiClient
 from lemon_markets.account import Account
-from lemon_markets.helpers.time_helper import *
+from lemon_markets.helpers.time_helper import current_time, timestamp_to_datetime
 
 
-class TradingVenues(ApiClient):
+class TradingVenues(_ApiClient):
+    """
+    Available trading venues.
+
+    Parameters
+    ----------
+    account : Account
+        Your auth data
+
+    """
+
     trading_venues = None
 
-    def __init__(self, account: Account):
+    def __init__(self, account: Account):       # noqa
         super().__init__(account=account)
 
     def get_venues(self):
+        """Load the list of trading venues."""
         data = self._request(endpoint='trading-venues/')
         data_rows = data.get("results")
-        self.trading_venues = [TradingVenue.from_response(self, data) for data in data_rows]
-
-    def get_opening_days(self, mic):
-        return self._request(endpoint=f"trading-venues/{mic}/opening-days")
+        self.trading_venues = [TradingVenue._from_response(
+            self, data) for data in data_rows]
 
 
 @dataclass()
-class TradingVenue:
+class TradingVenue(_ApiClient):
+    """A trading venue."""
+
     name: str = None
     title: str = None
     mic: str = None
     opening_days: list = None
-    request_class: TradingVenues = None
+    _account: Account = None
 
     @classmethod
-    def from_response(cls, request_class, data: dict):
-
+    def _from_response(cls, account, data: dict):
         return cls(
-            request_class=request_class,
+            _account=account,
             name=data.get('name'),
             title=data.get('title'),
             mic=data.get('mic')
         )
 
+    def __post_init__(self):            # noqa
+        super().__init__(self._account)
+
     @property
-    def is_open(self):
+    def is_open(self) -> bool:
+        """
+        Check if the venue is open.
+
+        Returns
+        -------
+        bool
+            True if the venue is open, False otherwise
+
+        """
         day = current_time().strftime("%Y-%m-%d")
         if self.opening_days is None:
             self.get_opening_days()
@@ -64,38 +89,71 @@ class TradingVenue:
         return False
 
     @property
-    def time_until_close(self):
+    def time_until_close(self) -> timedelta:
+        """
+        Get time until close of the venue.
+
+        Returns
+        -------
+        timedelta
+            Returns the time until close. Uninitialised if not available
+
+        """
         day = current_time().strftime("%Y-%m-%d")
         if self.opening_days is None:
             self.get_opening_days()
 
         for data in self.opening_days:
             if day == data.get('day_iso'):
-                return timestamp_to_datetime(data.get("closing_time")) - current_time()
+                return timestamp_to_datetime(
+                    data.get("closing_time")) - current_time()
 
         self.get_opening_days()
         for data in self.opening_days:
             if day == data.get('day_iso'):
-                return timestamp_to_datetime(data.get("closing_time")) - current_time()
+                return timestamp_to_datetime(
+                    data.get("closing_time")) - current_time()
 
         return timedelta()
 
     @property
-    def time_until_open(self):
+    def time_until_open(self) -> timedelta:
+        """
+        Get time until the market opens.
+
+        Returns
+        -------
+        timedelta
+            Returns the time until open. Uninitialised if not available
+
+        """
         day = current_time().strftime("%Y-%m-%d")
         if self.opening_days is None:
             self.get_opening_days()
 
         for data in self.opening_days:
             if day == data.get('day_iso'):
-                return timestamp_to_datetime(data.get("opening_time")) - current_time()
+                return timestamp_to_datetime(
+                    data.get("opening_time")) - current_time()
 
         self.get_opening_days()
         for data in self.opening_days:
             if day == data.get('day_iso'):
-                return timestamp_to_datetime(data.get("opening_time")) - current_time()
+                return timestamp_to_datetime(
+                    data.get("opening_time")) - current_time()
 
         return timedelta()
 
     def get_opening_days(self):
-        self.opening_days = self.request_class.get_opening_days(self.mic).get("results")
+        # TODO am i right here? just a guess really.. (type hint missing)
+        """
+        Get the open days of a week.
+
+        Returns
+        -------
+        List[str]
+            The open days of the week
+
+        """
+        self.opening_days = self._request(
+            endpoint=f"trading-venues/{self.mic}/opening-days").get("results")

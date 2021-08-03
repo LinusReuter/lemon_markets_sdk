@@ -12,7 +12,7 @@ if __name__ == '__main__':
         long_description=long_description,
         long_description_content_type="text/markdown",
         license='MIT',
-        python_requires='>=3.6',
+        python_requires='>=3.7',
         author='Linus Reuter',
         url="https://github.com/LinusReuter/lemon-markets-api-access",
         download_url='https://github.com/LinusReuter/lemon-markets-api-access/archive/refs/tags/v0.2.1.tar.gz',
@@ -23,6 +23,8 @@ if __name__ == '__main__':
             "Operating System :: OS Independent",
         ],
         install_requires=[
-            'requests',
+            'pandas == 1.3.1',
+            'dataclasses == 0.6',
+            'requests == 2.26.0'
         ],
     )
