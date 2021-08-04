@@ -8,13 +8,13 @@ if __name__ == '__main__':
     setup(
         name='lemon_markets_sdk',
         version=__version__,
-        description='SDK for Lemon Markets API',
+        description='SDK for the Lemon Markets API',
         long_description=long_description,
         long_description_content_type="text/markdown",
         license='MIT',
         python_requires='>=3.7',
         author='Linus Reuter',
-        url="https://github.com/LinusReuter/lemon-markets-api-access",
+        url="https://github.com/LinusReuter/lemon_markets_sdk.git",
         packages=find_packages(),
         classifiers=[
             "Programming Language :: Python :: 3",

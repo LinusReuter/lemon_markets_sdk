@@ -2,7 +2,7 @@ Installation
 ============
 
 If you first want to try this package, you can do so
-`in this colab notebook <https://colab.research.google.com/github/leonhma/lemon-markets-api-access/blob/master/docs/lemon_markets.ipynb>`_.
+`in this colab notebook <https://colab.research.google.com/github/leonhma/lemon_markets_sdk/blob/master/docs/lemon_markets.ipynb>`_.
 To install it locally, you have several options. Keep in mind that the minumum
 required python version is 3.7:
 
