@@ -67,7 +67,7 @@ class TradingVenue(_ApiClient):
         """
         day = current_time().strftime("%Y-%m-%d")
         if self.opening_days is None:
-            self.get_opening_days()
+            self.update_opening_days()
 
         for data in self.opening_days:
             if day == data.get('day_iso'):
@@ -77,7 +77,7 @@ class TradingVenue(_ApiClient):
                 else:
                     return False
 
-        self.get_opening_days()
+        self.update_opening_days()
         for data in self.opening_days:
             if day == data.get('day_iso'):
                 if timestamp_to_datetime(data.get("opening_time")) <= current_time() <= timestamp_to_datetime(
@@ -101,14 +101,14 @@ class TradingVenue(_ApiClient):
         """
         day = current_time().strftime("%Y-%m-%d")
         if self.opening_days is None:
-            self.get_opening_days()
+            self.update_opening_days()
 
         for data in self.opening_days:
             if day == data.get('day_iso'):
                 return timestamp_to_datetime(
                     data.get("closing_time")) - current_time()
 
-        self.get_opening_days()
+        self.update_opening_days()
         for data in self.opening_days:
             if day == data.get('day_iso'):
                 return timestamp_to_datetime(
@@ -129,14 +129,14 @@ class TradingVenue(_ApiClient):
         """
         day = current_time().strftime("%Y-%m-%d")
         if self.opening_days is None:
-            self.get_opening_days()
+            self.update_opening_days()
 
         for data in self.opening_days:
             if day == data.get('day_iso'):
                 return timestamp_to_datetime(
                     data.get("opening_time")) - current_time()
 
-        self.get_opening_days()
+        self.update_opening_days()
         for data in self.opening_days:
             if day == data.get('day_iso'):
                 return timestamp_to_datetime(
@@ -144,16 +144,9 @@ class TradingVenue(_ApiClient):
 
         return timedelta()
 
-    def get_opening_days(self):
-        # TODO am i right here? just a guess really.. (type hint missing)
+    def update_opening_days(self):
         """
-        Get the open days of a week.
-
-        Returns
-        -------
-        List[str]
-            The open days of the week
-
+        Updates the opening_days property of the TradingVenue instances
         """
         self.opening_days = self._request(
             endpoint=f"trading-venues/{self.mic}/opening-days").get("results")

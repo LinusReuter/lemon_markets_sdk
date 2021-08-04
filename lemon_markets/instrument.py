@@ -34,7 +34,6 @@ class InstrumentType(Enum):
 
 @dataclass()
 class Instrument:
-    # TODO what does the title propertiey mean?
     """
     Represents an instrument.
 
@@ -45,9 +44,9 @@ class Instrument:
     wkn : str
         The wkn identifier
     name : str
-        The name of the instrument
+        The name of the instrument (company name + identifier when the company has multiple instruments)
     title : str
-        The title
+        The title of the instrument (company name)
     symbol : str
         The short symbol the instrument
     currency : str

@@ -1,4 +1,4 @@
-Welcome to lemon-market-api-access's documentation!
+Welcome to lemon_markets_sdk's documentation!
 =====================================================
 
 Contents

@@ -11,7 +11,7 @@ from lemon_markets import __version__ as version
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 
-project = "lemon-markets-api-access"
+project = "lemon_markets_sdk"
 copyright = "Linus Reuter, MIT License"
 author = "Linus Reuter"
 release = version

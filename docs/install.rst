@@ -2,7 +2,7 @@ Installation
 ============
 
 If you first want to try this package, you can do so
-`in this colab notebook <https://colab.research.google.com/github/leonhma/lemon_markets_sdk/blob/master/docs/lemon_markets.ipynb>`_.
+`in this colab notebook <https://colab.research.google.com/github/LinusReuter/lemon_markets_sdk/blob/master/docs/lemon_markets.ipynb>`_.
 To install it locally, you have several options. Keep in mind that the minumum
 required python version is 3.7:
 
@@ -49,7 +49,7 @@ To install the latest version from GitHub, clone the repository by executing:
 
 .. code-block::
 
-    git clone https://github.com/LinusReuter/lemon-markets-api-access.git
+    git clone https://github.com/LinusReuter/lemon_markets_sdk.git
 
 After opening a terminal in this folder, type the following to install the library using
 a dynamic link that reflects your latest changes as you make them:

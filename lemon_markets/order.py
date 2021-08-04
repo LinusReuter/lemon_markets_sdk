@@ -89,7 +89,7 @@ class Order:
     created_at: datetime = None
     processed_at: datetime = None
     processed_quantity: int = None
-    average_price: str = None       # TODO convert to float?
+    average_price: float = None
     limit_price: float = None
     stop_price: float = None
     type: str = None
@@ -107,7 +107,7 @@ class Order:
             raise ValueError('Unexpected instrument type: %r' %
                              data.get('type'))
 
-        return cls(             # TODO missing properties?
+        return cls(             # TODO missing properties? SOLVED only these properties are given in the API response.
             instrument=instrument,
             quantity=data.get('quantity'),
             valid_until=timestamp_to_datetime(data.get('valid_until')),
@@ -365,8 +365,8 @@ class Orders(_ApiClient):
             order = Order._from_response(instrument, o)
             self.orders[order.status.name].update({order.uuid: order})
 
-    def clean_orders(self):  # removes all executed, deleted or expired orders in the orders dict
-        """Remove executed, deleted and expired orders from the list."""
+    def clean_orders(self):
+        """Remove executed, deleted and expired orders from the orders dict."""
         executed_uuids = list(self.orders['EXECUTED'])
         deleted_uuids = list(self.orders['DELETED'])
         expired_uuids = list(self.orders['EXPIRED'])

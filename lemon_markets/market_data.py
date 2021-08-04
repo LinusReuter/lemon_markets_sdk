@@ -31,7 +31,6 @@ class OHLC(_ApiClient):
             self, instrument: Instrument, venue: TradingVenue, x1: str,
             ordering: str = None, date_from: datetime = None,
             date_until: datetime = None, as_df: bool = True) -> Union[dict, DataFrame]:
-        # TODO what does the x1 param and ordering mean?
         """
         Get OHLC data on the specified instrument.
 
@@ -44,7 +43,7 @@ class OHLC(_ApiClient):
         x1 : str
             The granularity of the data. Either `M1`, `H1` or `D1`
         ordering : str, optional
-            The ordering of the data
+            By default, the data is not ordered. Choose between "date" (oldest to newest) or "-date" (newest to oldest).
         date_from : datetime, optional
             Limit the data to after this point in time
         date_until : datetime, optional

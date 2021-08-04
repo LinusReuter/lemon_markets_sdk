@@ -113,6 +113,6 @@ class Account:
     @property
     def _authorization(self) -> dict:
         if self._access_token_type == "bearer":
-            s = "Bearer " + self.access_token
+            token_string = "Bearer " + self.access_token
 
-        return {"Authorization": s}
+        return {"Authorization": token_string}
