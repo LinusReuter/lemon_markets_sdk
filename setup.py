@@ -1,4 +1,3 @@
-from lemon_markets import __version__
 from setuptools import setup, find_packages
 
 if __name__ == '__main__':
@@ -6,8 +5,8 @@ if __name__ == '__main__':
         long_description = fh.read()
 
     setup(
-        name='lemon_markets_sdk',
-        version=__version__,
+        name='lemon_markets',
+        version="0.0.0",
         description='SDK for the Lemon Markets API',
         long_description=long_description,
         long_description_content_type="text/markdown",
