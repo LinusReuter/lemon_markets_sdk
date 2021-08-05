@@ -20,8 +20,10 @@ class TradingVenues(_ApiClient):
     """
 
     trading_venues = None
+    _account = None
 
     def __init__(self, account: Account):       # noqa
+        _account = account
         super().__init__(account=account)
 
     def get_venues(self):
@@ -29,7 +31,7 @@ class TradingVenues(_ApiClient):
         data = self._request(endpoint='trading-venues/')
         data_rows = data.get("results")
         self.trading_venues = [TradingVenue._from_response(
-            self, data) for data in data_rows]
+            self._account, data) for data in data_rows]
 
 
 @dataclass()
