@@ -2,9 +2,11 @@
 
 from lemon_markets.helpers.api_client import _ApiClient
 from lemon_markets.account import Account
+from lemon_markets.helpers.time_helper import current_time
 
 from enum import Enum
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 
 
 class SpaceType(Enum):
@@ -29,6 +31,21 @@ class Space(_ApiClient):
     """
     Class representing a space.
 
+    Attributes
+    ----------
+    uuid : str
+        The uuid of the space.
+    name : str
+        The name of the space.
+    type : SpaceType
+        The type of the space.
+    state : dict
+        The state of the space. The data gets automatically updated if it is older than 10 seconds.
+    balance : float
+        The balance of the space. The data gets automatically updated if it is older than 10 seconds.
+    cash_to_invest : float
+        The cash to invest. The data gets automatically updated if it is older than 10 seconds.
+
     Raises
     ------
     ValueError
@@ -38,10 +55,12 @@ class Space(_ApiClient):
 
     uuid: str = None
     name: str = None
-    type: str = None
+    type: SpaceType = None
     _state: dict = None
 
     _account: Account = None
+
+    _latest_update: datetime = None
 
     @classmethod
     def _from_response(cls, account: Account, data: dict):
@@ -55,7 +74,8 @@ class Space(_ApiClient):
             name=data.get('name'),
             _state=data.get('state'),
             type=type_,
-            _account=account
+            _account=account,
+            _latest_update=current_time()
         )
 
     def update_values(self, data: dict):
@@ -87,14 +107,18 @@ class Space(_ApiClient):
         super().__init__(account=self._account)
 
     def _update_space_state(self):
-        data = self._request(f"spaces/{self.uuid}/")
-        self.update_values(data)
+        diff_since_last_update = self._latest_update - current_time()
+
+        if diff_since_last_update.total_seconds() > 10:
+            data = self._request(f"spaces/{self.uuid}/")
+            self.update_values(data)
+        else:
+            pass
 
     @property
     def state(self) -> dict:
-        # TODO is state of type dict?
         """
-        Get the space of the state.
+        Get the state of the space. The data gets automatically updated if it is older than 10 seconds.
 
         Returns
         -------
@@ -107,13 +131,12 @@ class Space(_ApiClient):
 
     @property
     def balance(self) -> float:
-        # TODO what is the type of balance (should be float?)
         """
-        Get space balance.
+        Get space balance. The data gets automatically updated if it is older than 10 seconds.
 
         Returns
         -------
-        str
+        float
             The balance
 
         """
@@ -124,11 +147,11 @@ class Space(_ApiClient):
     def cash_to_invest(self) -> float:
         # TODO isnt this the same as balance?
         """
-        Get cash to invest.
+        Get cash to invest. The data gets automatically updated if it is older than 10 seconds.
 
         Returns
         -------
-        str
+        float
             Cash to invest
 
         """
