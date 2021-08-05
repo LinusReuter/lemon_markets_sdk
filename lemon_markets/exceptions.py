@@ -19,3 +19,9 @@ class LemonAPIException(LemonException):
     def __init__(self, status, errormessage):       # noqa
         self.status = status
         self.errormessage = errormessage
+
+
+class LemonTokenException(LemonException):
+    """Raised when the account token is of the wrong type."""
+
+    pass

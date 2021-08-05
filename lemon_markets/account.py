@@ -5,7 +5,7 @@ import requests
 import json
 
 from lemon_markets.config import DEFAULT_AUTH_API_URL, DEFAULT_PAPER_REST_API_URL, DEFAULT_MONEY_REST_API_URL
-from lemon_markets.exceptions import LemonConnectionException
+from lemon_markets.exceptions import LemonTokenException
 
 
 class Account:
@@ -74,7 +74,7 @@ class Account:
         self._access_token = data.get("access_token")
         self._access_token_type = data.get("token_type")
         if self._access_token_type not in ["bearer"]:
-            raise LemonConnectionException("Error: unknown token type")
+            raise LemonTokenException("The access token is not from type bearer.")
         self._access_token_expires = int(
             time.time()) + data.get("expires_in") - 60
 
@@ -112,7 +112,18 @@ class Account:
 
     @property
     def _authorization(self) -> dict:
+        """
+        Temporary access token packaged in a dict like the client needs it for authorization.
+
+        Returns
+        -------
+        dict
+            The authorization dict (currently only of type `bearer)`: {"Authorization": "Bearer " + self.access_token}
+
+        """
         if self._access_token_type == "bearer":
             token_string = "Bearer " + self.access_token
+        else:
+            raise LemonTokenException("The access token is not from type bearer.")
 
         return {"Authorization": token_string}
