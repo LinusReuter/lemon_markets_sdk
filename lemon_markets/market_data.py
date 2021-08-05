@@ -30,7 +30,7 @@ class OHLC(_ApiClient):
     def get_data(
             self, instrument: Instrument, venue: TradingVenue, x1: str,
             ordering: str = None, date_from: datetime = None,
-            date_until: datetime = None, as_df: bool = True) -> Union[dict, DataFrame]:
+            date_until: datetime = None, as_df: bool = True) -> Union[dict, DataFrame, None]:
         """
         Get OHLC data on the specified instrument.
 
@@ -53,8 +53,9 @@ class OHLC(_ApiClient):
 
         Returns
         -------
-        Union[dict, pandas.DataFrame]
-            Either the raw response json data (as dict) or a pandas dataframe
+        Union[dict, pandas.DataFrame, None]
+            Either the raw response json data (as dict) or a pandas dataframe.
+            If the response is empty (no data available) None is returned.
 
         """
         endpoint = f"trading-venues/{venue.mic}/instruments/{instrument.isin}/data/ohlc/{x1}/"
@@ -67,16 +68,16 @@ class OHLC(_ApiClient):
             params['date_until'] = int(datetime_to_timestamp(date_until))
         results = self._request(endpoint=endpoint, params=params)['results']       # TODO make it _request_paged
 
+        if len(results) == 0:
+            return None
+
         if not as_df:
             return results
         else:
-            # TODO breaks if response is empty
             from_tz = timezone.utc
             to_tz = datetime.now().astimezone().tzinfo
-            print(from_tz, to_tz)
             df = DataFrame(results)
-            df['t'] = to_datetime(df['t'], unit='s').dt.tz_localize(  # TODO this line
-                from_tz).dt.tz_convert(to_tz)
+            df['t'] = to_datetime(df['t'], unit='s').dt.tz_localize(from_tz).dt.tz_convert(to_tz)
             df.set_index('t', inplace=True)
             if ordering == '-date':
                 df.sort_index(ascending=False, inplace=True)
