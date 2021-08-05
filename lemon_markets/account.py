@@ -8,9 +8,16 @@ from lemon_markets.config import DEFAULT_AUTH_API_URL, DEFAULT_PAPER_REST_API_UR
 from lemon_markets.exceptions import LemonTokenException
 
 
-class Account:  # TODO add attributes to docs
+class Account:
     """
     Represents an account's credentials.
+
+    Attributes
+    ----------
+    access_token : str
+        A currently valid access token
+    access_token_type : str
+        Type of the access token. Currently only `bearer`
 
     Raises
     ------
