@@ -30,7 +30,7 @@ class State(_ApiClient):  # TODO add attributes to docs
     def __init__(self, account: Account):       # noqa
         super().__init__(account)
 
-    def get_state(self):
+    def get_state(self):  # TODO add caching for state
         """
         Get the state of a space.
 
