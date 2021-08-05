@@ -69,10 +69,10 @@ class _ApiClient:
             else:
                 raise ValueError('Unknown method: %r' % method)
 
-            response.raise_for_status()
-
         except requests.Timeout:
             raise LemonConnectionException("Network Timeout on url: %s" % url)
+
+        response.raise_for_status()
 
         if response.status_code > 399:      # will this ever be triggered? raise_for_status takes care of this case, or not?
             raise LemonAPIException(
