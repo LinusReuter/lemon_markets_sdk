@@ -31,6 +31,11 @@ class Portfolio(_ApiClient):  # TODO Add attributes to docs
     """
     Class representing the space's portfolio.
 
+    Attributes
+    ----------
+    positions : list
+            The positions based on the last call of update_positions().
+
     Parameters
     ----------
     account : Account
