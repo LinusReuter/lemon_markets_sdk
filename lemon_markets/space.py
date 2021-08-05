@@ -27,7 +27,7 @@ class SpaceType(Enum):
 
 
 @dataclass
-class Space(_ApiClient):
+class Space(_ApiClient):  # TODO add changeability of caching time.
     """
     Class representing a space.
 

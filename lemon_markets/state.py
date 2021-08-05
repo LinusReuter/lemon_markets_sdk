@@ -7,7 +7,7 @@ from lemon_markets.account import Account
 from lemon_markets.space import Space
 
 
-class State(_ApiClient):
+class State(_ApiClient):  # TODO add attributes to docs
     """
     Represents the state of an account.
 

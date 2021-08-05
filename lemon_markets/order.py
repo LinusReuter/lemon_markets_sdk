@@ -96,7 +96,7 @@ class Order:
     side: str = None
     uuid: str = None
     status: OrderStatus = None
-    trading_venue: dict = None      # TODO data type?
+    trading_venue: dict = None      # TODO convert to type TradingVenue
 
     @classmethod
     def _from_response(cls, instrument: Instrument, data: dict):
@@ -107,7 +107,7 @@ class Order:
             raise ValueError('Unexpected instrument type: %r' %
                              data.get('type'))
 
-        return cls(             # TODO missing properties? SOLVED only these properties are given in the API response.
+        return cls(
             instrument=instrument,
             quantity=data.get('quantity'),
             valid_until=timestamp_to_datetime(data.get('valid_until')),

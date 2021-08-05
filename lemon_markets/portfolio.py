@@ -27,7 +27,7 @@ class Position:
         )
 
 
-class Portfolio(_ApiClient):
+class Portfolio(_ApiClient):  # TODO Add attributes to docs
     """
     Class representing the space's portfolio.
 

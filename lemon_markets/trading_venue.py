@@ -8,7 +8,7 @@ from lemon_markets.account import Account
 from lemon_markets.helpers.time_helper import current_time, timestamp_to_datetime
 
 
-class TradingVenues(_ApiClient):
+class TradingVenues(_ApiClient):  # TODO add attributes to docs
     """
     Available trading venues.
 
