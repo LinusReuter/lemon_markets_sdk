@@ -7,7 +7,7 @@ from lemon_markets.account import Account
 from lemon_markets.space import Space
 
 
-class State(_ApiClient):  # TODO add attributes to docs
+class State(_ApiClient):
     """
     Represents the state of an account.
 
@@ -15,6 +15,15 @@ class State(_ApiClient):  # TODO add attributes to docs
     ----------
     account : Account
         The account with your space's credentials.
+
+    Attributes
+    ----------
+    state : dict
+        The state of the account.
+    balance : float
+        The balance of the account.
+    spaces : list[Space]
+        List of your spaces.
 
     Raises
     ------
@@ -56,12 +65,12 @@ class State(_ApiClient):  # TODO add attributes to docs
     @property
     def balance(self) -> float:
         """
-        Get the balance of a space.
+        Get the balance of the account.
 
         Returns
         -------
         float
-            The balance of the space
+            The balance of the account
 
         """
         self.get_state()
@@ -70,7 +79,7 @@ class State(_ApiClient):  # TODO add attributes to docs
     @property
     def state(self) -> dict:
         """
-        Get the state of the space.
+        Get the state of the account.
 
         Returns
         -------
