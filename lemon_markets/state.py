@@ -1,8 +1,10 @@
 """Module for showing the state of you account."""
 
 from typing import List
+from datetime import datetime
 
 from lemon_markets.helpers.api_client import _ApiClient
+from lemon_markets.helpers.time_helper import current_time
 from lemon_markets.account import Account
 from lemon_markets.space import Space
 
@@ -15,6 +17,8 @@ class State(_ApiClient):
     ----------
     account : Account
         The account with your space's credentials.
+    cash_time_in_seconds : int
+        Optional: The time requested data is cashed. Default is 10 seconds.
 
     Attributes
     ----------
@@ -36,10 +40,17 @@ class State(_ApiClient):
     _balance: float = None
     _spaces: List[Space] = None
 
-    def __init__(self, account: Account):       # noqa
-        super().__init__(account)
+    _latest_update: datetime = None
+    _cash_storage_time: int = 10
 
-    def get_state(self):  # TODO add caching for state
+    def __init__(self, account: Account, cash_time_in_seconds: int = 10):       # noqa
+        super().__init__(account)
+        self._cash_storage_time = cash_time_in_seconds
+        self.get_state()
+        self.get_spaces()
+        self._latest_update = current_time()
+
+    def get_state(self):
         """
         Get the state of a space.
 
@@ -49,18 +60,40 @@ class State(_ApiClient):
             Raised if theres an internal request error
 
         """
-        data = self._request(endpoint='state/')
-        try:
-            self._balance = float(data.get('state').get('balance'))
-            self._state = data
-        except Exception:
-            raise Exception
+        diff_since_last_update = self._latest_update - current_time()
+
+        if diff_since_last_update.total_seconds() > self._cash_storage_time:
+            data = self._request(endpoint='state/')
+            try:
+                self._balance = float(data.get('state').get('balance'))
+                self._state = data
+            except Exception:
+                raise Exception
+        else:
+            pass
 
     def get_spaces(self):
         """Return a list of your spaces."""
-        data_rows = self._request_paged('spaces/')
-        self._spaces = [Space._from_response(
-            self._account, data) for data in data_rows]
+        diff_since_last_update = self._latest_update - current_time()
+
+        if diff_since_last_update.total_seconds() > self._cash_storage_time:
+            data_rows = self._request_paged('spaces/')
+            self._spaces = [Space._from_response(
+                self._account, data) for data in data_rows]
+        else:
+            pass
+
+    def change_cash_time(self, new_cash_time_in_seconds: int):
+        """
+        Changes the time request results are cashed by multiple property calls.
+
+        Parameters
+        ----------
+        new_cash_time_in_seconds : int
+            The wished time data is cashed.
+
+        """
+        self._cash_storage_time = new_cash_time_in_seconds
 
     @property
     def balance(self) -> float:

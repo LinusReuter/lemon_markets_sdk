@@ -27,7 +27,7 @@ class SpaceType(Enum):
 
 
 @dataclass
-class Space(_ApiClient):  # TODO add changeability of caching time.
+class Space(_ApiClient):
     """
     Class representing a space.
 
@@ -40,11 +40,11 @@ class Space(_ApiClient):  # TODO add changeability of caching time.
     type : SpaceType
         The type of the space.
     state : dict
-        The state of the space. The data gets automatically updated if it is older than 10 seconds.
+        The state of the space. The data gets automatically updated if it is older than 10 seconds. (Or your manually set cash time)
     balance : float
-        The balance of the space. The data gets automatically updated if it is older than 10 seconds.
+        The balance of the space. The data gets automatically updated if it is older than 10 seconds. (Or your manually set cash time)
     cash_to_invest : float
-        The cash to invest. The data gets automatically updated if it is older than 10 seconds.
+        The cash to invest. The data gets automatically updated if it is older than 10 seconds. (Or your manually set cash time)
 
     Raises
     ------
@@ -61,6 +61,7 @@ class Space(_ApiClient):  # TODO add changeability of caching time.
     _account: Account = None
 
     _latest_update: datetime = None
+    _cash_storage_time: int = 10
 
     @classmethod
     def _from_response(cls, account: Account, data: dict):
@@ -109,16 +110,29 @@ class Space(_ApiClient):  # TODO add changeability of caching time.
     def _update_space_state(self):
         diff_since_last_update = self._latest_update - current_time()
 
-        if diff_since_last_update.total_seconds() > 10:
+        if diff_since_last_update.total_seconds() > self._cash_storage_time:
             data = self._request(f"spaces/{self.uuid}/")
             self.update_values(data)
         else:
             pass
 
+    def change_cash_time(self, new_cash_time_in_seconds: int):
+        """
+        Changes the time request results are cashed by multiple property calls.
+
+        Parameters
+        ----------
+        new_cash_time_in_seconds : int
+            The wished time data is cashed.
+
+        """
+        self._cash_storage_time = new_cash_time_in_seconds
+
     @property
     def state(self) -> dict:
         """
         Get the state of the space. The data gets automatically updated if it is older than 10 seconds.
+        (Or your manually set cash time)
 
         Returns
         -------
@@ -133,6 +147,7 @@ class Space(_ApiClient):  # TODO add changeability of caching time.
     def balance(self) -> float:
         """
         Get space balance. The data gets automatically updated if it is older than 10 seconds.
+        (Or your manually set cash time)
 
         Returns
         -------
@@ -145,9 +160,9 @@ class Space(_ApiClient):  # TODO add changeability of caching time.
 
     @property
     def cash_to_invest(self) -> float:
-        # TODO isnt this the same as balance?
         """
         Get cash to invest. The data gets automatically updated if it is older than 10 seconds.
+        (Or your manually set cash time)
 
         Returns
         -------
