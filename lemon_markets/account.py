@@ -4,7 +4,10 @@ import time
 import requests
 import json
 
-from lemon_markets.config import DEFAULT_AUTH_API_URL, DEFAULT_PAPER_REST_API_URL, DEFAULT_MONEY_REST_API_URL
+from lemon_markets.config import DEFAULT_AUTH_API_URL, \
+    DEFAULT_PAPER_REST_API_URL, DEFAULT_PAPER_DATA_REST_API_URL, \
+    DEFAULT_MONEY_REST_API_URL, DEFAULT_MONEY_DATA_REST_API_URL
+
 from lemon_markets.exceptions import LemonTokenException
 
 
@@ -37,6 +40,7 @@ class Account:
     _access_token_expires: int
 
     _DEFAULT_API_URL: str
+    _DATA_API_URL: str
 
     def __init__(self, client_id: str, client_secret: str,
                  trading_type: str = 'paper'):
@@ -63,9 +67,11 @@ class Account:
 
         if trading_type.lower() == 'paper':
             self._DEFAULT_API_URL = DEFAULT_PAPER_REST_API_URL
+            self._DATA_API_URL = DEFAULT_PAPER_DATA_REST_API_URL
         elif trading_type.lower() == 'money':
             raise Exception("Real money trading is not available yet!")
             self.DEFAULT_API_URL = DEFAULT_MONEY_REST_API_URL
+            self._DATA_API_URL = DEFAULT_MONEY_DATA_REST_API_URL
 
         self._request_access_token()
 
