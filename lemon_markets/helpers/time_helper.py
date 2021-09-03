@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Union
 
 
-def timestamp_to_datetime(ts: Union[int, float]) -> datetime:
+def timestamp_seconds_to_datetime(ts: Union[int, float]) -> datetime:
     """
     Convert unix timestamp to datetime object.
 
@@ -21,7 +21,7 @@ def timestamp_to_datetime(ts: Union[int, float]) -> datetime:
     return datetime.fromtimestamp(ts).astimezone()
 
 
-def datetime_to_timestamp(dt: datetime) -> float:
+def datetime_to_timestamp_seconds(dt: datetime) -> float:
     """
     Convert datetime to unix timestamp.
 
@@ -36,7 +36,43 @@ def datetime_to_timestamp(dt: datetime) -> float:
         The unix timestamp
 
     """
-    return dt.timestamp()
+    return int(dt.timestamp())
+
+
+def timestamp_milliseconds_to_datetime(ts: Union[int, float]) -> datetime:
+    """
+    Convert unix milliseconds timestamp to datetime object.
+
+    Parameters
+    ----------
+    ts : Union[int, float]
+        The timestamp in milliseconds to convert
+
+    Returns
+    -------
+    datetime
+        The corresponding datetime object
+
+    """
+    return datetime.fromtimestamp(ts / 1000).astimezone()
+
+
+def datetime_to_timestamp_milliseconds(dt: datetime) -> float:
+    """
+    Convert datetime to unix milliseconds timestamp.
+
+    Parameters
+    ----------
+    dt : datetime
+        The datetime object
+
+    Returns
+    -------
+    float
+        The unix milliseconds timestamp
+
+    """
+    return int(dt.timestamp() * 1000)
 
 
 def current_time() -> datetime:  # gets time in local timezone

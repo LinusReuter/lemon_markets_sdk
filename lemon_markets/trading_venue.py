@@ -5,7 +5,7 @@ from datetime import timedelta
 
 from lemon_markets.helpers.api_client import _ApiClient
 from lemon_markets.account import Account
-from lemon_markets.helpers.time_helper import current_time, timestamp_to_datetime
+from lemon_markets.helpers.time_helper import current_time, timestamp_seconds_to_datetime
 
 
 class TradingVenues(_ApiClient):
@@ -29,11 +29,11 @@ class TradingVenues(_ApiClient):
 
     def __init__(self, account: Account):       # noqa
         _account = account
-        super().__init__(account=account)
+        super().__init__(account=account, is_data=True)
 
     def get_venues(self):
         """Load the list of trading venues."""
-        data = self._request(endpoint='trading-venues/')
+        data = self._request(endpoint='venues/')
         data_rows = data.get("results")
         self.trading_venues = [TradingVenue._from_response(
             self._account, data) for data in data_rows]
@@ -78,7 +78,7 @@ class TradingVenue(_ApiClient):
 
         for data in self.opening_days:
             if day == data.get('day_iso'):
-                if timestamp_to_datetime(data.get("opening_time")) <= current_time() <= timestamp_to_datetime(
+                if timestamp_seconds_to_datetime(data.get("opening_time")) <= current_time() <= timestamp_seconds_to_datetime(
                         data.get("closing_time")):
                     return True
                 else:
@@ -87,7 +87,7 @@ class TradingVenue(_ApiClient):
         self.update_opening_days()
         for data in self.opening_days:
             if day == data.get('day_iso'):
-                if timestamp_to_datetime(data.get("opening_time")) <= current_time() <= timestamp_to_datetime(
+                if timestamp_seconds_to_datetime(data.get("opening_time")) <= current_time() <= timestamp_seconds_to_datetime(
                         data.get("closing_time")):
                     return True
                 else:
@@ -112,13 +112,13 @@ class TradingVenue(_ApiClient):
 
         for data in self.opening_days:
             if day == data.get('day_iso'):
-                return timestamp_to_datetime(
+                return timestamp_seconds_to_datetime(
                     data.get("closing_time")) - current_time()
 
         self.update_opening_days()
         for data in self.opening_days:
             if day == data.get('day_iso'):
-                return timestamp_to_datetime(
+                return timestamp_seconds_to_datetime(
                     data.get("closing_time")) - current_time()
 
         return timedelta()
@@ -140,13 +140,13 @@ class TradingVenue(_ApiClient):
 
         for data in self.opening_days:
             if day == data.get('day_iso'):
-                return timestamp_to_datetime(
+                return timestamp_seconds_to_datetime(
                     data.get("opening_time")) - current_time()
 
         self.update_opening_days()
         for data in self.opening_days:
             if day == data.get('day_iso'):
-                return timestamp_to_datetime(
+                return timestamp_seconds_to_datetime(
                     data.get("opening_time")) - current_time()
 
         return timedelta()

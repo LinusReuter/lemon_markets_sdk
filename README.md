@@ -87,7 +87,8 @@ instrument.trading_venues
 
 ### Time Helper
 All times in this library are stored as timezone aware datetime objects. 
-Furthermore, datetime objects are needed for passing a time to a library function, such as creating an order. 
+Furthermore, datetime objects are needed for passing a time to a library function, such as creating an order.
+
 ```python
 from lemon_markets.helpers.time_helper import *
 
@@ -95,11 +96,11 @@ current_time()  # returns the current time as a timezone aware datetime object.
 
 # all params require an integer and are optional. If parameter is not set the current year/month/... is used. 
 # Returns a timezone aware datetime object. 
-time(year= , month= , day= , hour= , minute= , second= )  
+time(year=, month=, day=, hour=, minute=, second=)
 
 # mostly for internal use:
-datetime_to_timestamp(datetime) # creates an UTC timestamp from the given datetime objects. 
-timestamp_to_datetime(timestamp) # creates an datetime object with local timezone from the given UTC timestamp.
+datetime_to_timestamp_seconds(datetime)  # creates an UTC timestamp from the given datetime objects. 
+timestamp_seconds_to_datetime(timestamp)  # creates an datetime object with local timezone from the given UTC timestamp.
 
 ```
 

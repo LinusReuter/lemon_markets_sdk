@@ -7,7 +7,7 @@ from typing import Union
 
 from lemon_markets.helpers.api_client import _ApiClient
 from lemon_markets.account import Account
-from lemon_markets.helpers.time_helper import datetime_to_timestamp
+from lemon_markets.helpers.time_helper import datetime_to_timestamp_seconds
 from lemon_markets.instrument import Instrument
 from lemon_markets.trading_venue import TradingVenue
 
@@ -63,9 +63,9 @@ class OHLC(_ApiClient):
         if ordering is not None:
             params['ordering'] = ordering
         if date_from is not None:
-            params['date_from'] = int(datetime_to_timestamp(date_from))
+            params['date_from'] = int(datetime_to_timestamp_seconds(date_from))
         if date_until is not None:
-            params['date_until'] = int(datetime_to_timestamp(date_until))
+            params['date_until'] = int(datetime_to_timestamp_seconds(date_until))
         results = self._request(endpoint=endpoint, params=params)['results']       # TODO make it _request_paged
 
         if len(results) == 0:

@@ -9,7 +9,7 @@ from lemon_markets.helpers.api_client import _ApiClient
 from lemon_markets.account import Account
 from lemon_markets.instrument import Instrument, Instruments, InstrumentType
 from lemon_markets.space import Space
-from lemon_markets.helpers.time_helper import timestamp_to_datetime, datetime_to_timestamp
+from lemon_markets.helpers.time_helper import timestamp_seconds_to_datetime, datetime_to_timestamp_seconds
 
 
 class OrderStatus(Enum):
@@ -110,7 +110,7 @@ class Order:
         return cls(
             instrument=instrument,
             quantity=data.get('quantity'),
-            valid_until=timestamp_to_datetime(data.get('valid_until')),
+            valid_until=timestamp_seconds_to_datetime(data.get('valid_until')),
             side=data.get('side'),
             stop_price=data.get('stop_price'),
             limit_price=data.get('limit_price'),
@@ -209,7 +209,7 @@ class Orders(_ApiClient):
         endpoint = f"spaces/{self._space.uuid}/orders/"
         data = {
             "isin": instrument.isin,
-            "valid_until": datetime_to_timestamp(valid_until),
+            "valid_until": datetime_to_timestamp_seconds(valid_until),
             "side": side, "quantity": quantity}
         if stop_price is not None:
             data['stop_price'] = stop_price
@@ -322,10 +322,10 @@ class Orders(_ApiClient):
         endpoint = f"spaces/{self._space.uuid}/orders/"
         params = {}
         if created_at_until is not None:
-            params['created_at_until'] = datetime_to_timestamp(
+            params['created_at_until'] = datetime_to_timestamp_seconds(
                 created_at_until)
         if created_at_from is not None:
-            params['created_at_from'] = datetime_to_timestamp(created_at_from)
+            params['created_at_from'] = datetime_to_timestamp_seconds(created_at_from)
         if side is not None:
             params['side'] = side
         if type is not None:
