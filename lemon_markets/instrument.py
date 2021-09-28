@@ -90,7 +90,7 @@ class Instrument:
             symbol=data.get('symbol'),
             currency=data.get('currency'),
             tradable=data.get('tradable'),
-            trading_venues=[TradingVenue._from_response(account, res) for res in data.get('trading_venues')]
+            trading_venues=[TradingVenue._from_response(account, res) for res in data.get('venues')]
         )
 
 
@@ -105,7 +105,7 @@ class Instruments(_ApiClient):
         """
 
     def __init__(self, account: Account):       # noqa
-        super().__init__(account=account)
+        super().__init__(account=account, is_data=True)
 
     def list_instruments(self, *args, **kwargs) -> List[Instrument]:
         """
