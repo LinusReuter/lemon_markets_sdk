@@ -40,13 +40,16 @@ class TradingVenues(_ApiClient):
 
 
 @dataclass()
-class TradingVenue(_ApiClient):
+class TradingVenue(_ApiClient):  # TODO update openig checks for new AIP Strcture
     """A trading venue."""
 
     name: str = None
     title: str = None
     mic: str = None
+    currency: str = None
     opening_days: list = None
+    opening_time = None
+    closing_time = None
     _account: Account = None
 
     @classmethod
@@ -55,11 +58,13 @@ class TradingVenue(_ApiClient):
             _account=account,
             name=data.get('name'),
             title=data.get('title'),
-            mic=data.get('mic')
+            mic=data.get('mic'),
+            currency=data.get("currency"),
+            opening_days=data.get('opening_days')
         )
 
     def __post_init__(self):            # noqa
-        super().__init__(self._account)
+        super().__init__(self._account, is_data=True)
 
     @property
     def is_open(self) -> bool:
@@ -156,4 +161,4 @@ class TradingVenue(_ApiClient):
         Updates the opening_days property of the TradingVenue instances
         """
         self.opening_days = self._request(
-            endpoint=f"trading-venues/{self.mic}/opening-days").get("results")
+            endpoint=f"venues/{self.mic}/opening-days").get("results")
