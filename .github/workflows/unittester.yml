@@ -1,0 +1,28 @@
+name: unittester
+
+on: push
+
+jobs:
+  unittest:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [3.7, 3.8, 3.9, 3.10]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.version }}
+      - name: Install project & dependencies
+        run: |
+          pip install --upgrade pip
+          if test -f requirements.txt; then
+            pip install -r requirements.txt
+          fi
+          if test -f setup.py; then
+            pip install .
+          fi
+      - name: Run unittests
+        run: |
+          python -m unittest
+
