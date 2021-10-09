@@ -1,7 +1,9 @@
 # Lemon Markets SDK
 
+[![unittester](https://github.com/LinusReuter/lemon_markets_sdk/actions/workflows/unittester.yml/badge.svg)](https://github.com/LinusReuter/lemon_markets_sdk/actions/workflows/unittester.yml)
 [![Documentation Status](https://readthedocs.org/projects/lemon_markets_sdk/badge/?version=latest)](https://lemon_markets_sdk.readthedocs.io/en/latest/?badge=latest)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/LinusReuter/lemon_markets_sdk/blob/master/docs/lemon_markets.ipynb)
+
 
 This is a Python SDK for accessing the Lemon Markets API.
 API documentation can be found here: https://docs.lemon.markets
