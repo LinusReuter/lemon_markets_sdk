@@ -10,7 +10,9 @@ client_token = getenv('CLIENT_TOKEN')
 
 class _TestAccount(unittest.TestCase):
     def test_token_type(self):
-        self.assertEqual(Account(client_id, client_token).access_token_type, 'bearer')
+        self.assertEqual(
+            Account(client_id, client_token).access_token_type, 'bearer',
+            'Incorrect acount token type.')
 
 
 if __name__ == '__main__':
