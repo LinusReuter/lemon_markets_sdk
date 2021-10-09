@@ -45,7 +45,7 @@ class Account:
     def __init__(self, client_id: str, client_secret: str,
                  trading_type: str = 'paper'):
         """
-        Initialise with client_id and client_secret.
+        Initialize with client_id and client_secret.
 
         Parameters
         ----------

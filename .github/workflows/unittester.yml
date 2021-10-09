@@ -3,7 +3,7 @@ name: unittester
 on: push
 
 jobs:
-  unittest:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -28,6 +28,9 @@ jobs:
             echo "::endgroup::"
           fi
       - name: Run unittests
+        env:
+          CLIENT_ID: ${{ secrets.TEST_CLIENT_ID }}
+          CLIENT_TOKEN: ${{ secrets.TEST_CLIENT_TOKEN }}
         run: |
           python -m unittest
 

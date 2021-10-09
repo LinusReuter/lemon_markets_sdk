@@ -108,7 +108,7 @@ class TradingVenue(_ApiClient):  # TODO update openig checks for new AIP Strctur
         Returns
         -------
         timedelta
-            Returns the time until close. Uninitialised if not available
+            Returns the time until close. Uninitialized if not available
 
         """
         day = current_time().strftime("%Y-%m-%d")
@@ -136,7 +136,7 @@ class TradingVenue(_ApiClient):  # TODO update openig checks for new AIP Strctur
         Returns
         -------
         timedelta
-            Returns the time until open. Uninitialised if not available
+            Returns the time until open. Uninitialized if not available
 
         """
         day = current_time().strftime("%Y-%m-%d")

@@ -110,7 +110,7 @@ timestamp_seconds_to_datetime(timestamp)  # creates an datetime object with loca
 ```python
 from lemon_markets.order import *
 
-# Initialise the Orders Class
+# Initialize the Orders Class
 orders = Orders(account=acc, space=space)
 print(orders.orders)  # see all created and retrieved orders sorted in dicts by status. 
 # the Structure of the orders.orders dict:
