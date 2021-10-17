@@ -6,7 +6,7 @@ from lemon_markets.helpers.time_helper import current_time
 
 from enum import Enum
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 class SpaceType(Enum):
@@ -113,12 +113,11 @@ class Space(_ApiClient):
         if diff_since_last_update.total_seconds() > self._cash_storage_time:
             data = self._request(f"spaces/{self.uuid}/")
             self.update_values(data)
-        else:
-            pass
 
+    # TODO revise docstring
     def change_cash_time(self, new_cash_time_in_seconds: int):
         """
-        Changes the time request results are cashed by multiple property calls.
+        Change the time request results are cashed by multiple property calls.
 
         Parameters
         ----------
@@ -132,6 +131,7 @@ class Space(_ApiClient):
     def state(self) -> dict:
         """
         Get the state of the space. The data gets automatically updated if it is older than 10 seconds.
+
         (Or your manually set cash time)
 
         Returns
@@ -147,6 +147,7 @@ class Space(_ApiClient):
     def balance(self) -> float:
         """
         Get space balance. The data gets automatically updated if it is older than 10 seconds.
+
         (Or your manually set cash time)
 
         Returns
@@ -162,6 +163,7 @@ class Space(_ApiClient):
     def cash_to_invest(self) -> float:
         """
         Get cash to invest. The data gets automatically updated if it is older than 10 seconds.
+
         (Or your manually set cash time)
 
         Returns

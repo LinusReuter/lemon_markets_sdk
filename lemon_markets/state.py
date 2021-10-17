@@ -69,8 +69,6 @@ class State(_ApiClient):
                 self._state = data
             except Exception:
                 raise Exception
-        else:
-            pass
 
     def get_spaces(self):
         """Return a list of your spaces."""
@@ -80,12 +78,11 @@ class State(_ApiClient):
             data_rows = self._request_paged('spaces/')
             self._spaces = [Space._from_response(
                 self._account, data) for data in data_rows]
-        else:
-            pass
 
+    # TODO revise docstring
     def change_cash_time(self, new_cash_time_in_seconds: int):
         """
-        Changes the time request results are cashed by multiple property calls.
+        Change the time request results are cashed by multiple property calls.
 
         Parameters
         ----------

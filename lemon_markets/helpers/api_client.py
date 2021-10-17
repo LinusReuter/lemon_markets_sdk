@@ -10,12 +10,10 @@ from lemon_markets.exceptions import LemonConnectionException, LemonAPIException
 
 class _ApiClient:
 
-    def __init__(self, account: Account, endpoint: str = None, is_data: bool = False):
+    def __init__(
+            self, account: Account, endpoint: str = None, is_data: bool = False):
         self._account = account
-        if is_data:
-            ep = self._account._DATA_API_URL
-        else:
-            ep = self._account._DEFAULT_API_URL
+        ep = self._account._DATA_API_URL if is_data else self._account._DEFAULT_API_URL
         self._endpoint = endpoint or ep
 
     def _request_paged(self, endpoint, data_=None, params=None) -> List[dict]:
@@ -27,7 +25,7 @@ class _ApiClient:
         try:
 
             while True:
-                
+
                 if next is not None:
                     data = self._request(next, data=data_, url_prefix=False)
                 else:
@@ -49,10 +47,7 @@ class _ApiClient:
             self, endpoint, method='GET', data=None, params=None,
             url_prefix=True) -> dict:
         method = method.lower()
-        if url_prefix:
-            url = self._endpoint+endpoint
-        else:
-            url = endpoint
+        url = self._endpoint+endpoint if url_prefix else endpoint
         headers = self._account._authorization
 
         try:

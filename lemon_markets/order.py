@@ -240,11 +240,7 @@ class Orders(_ApiClient):
                 The new OrderStatus
 
         """
-        endpoint = f"spaces/{self._space.uuid}/orders/{order.uuid}/"
-        old_status = order.status.name
-        self.orders[old_status].pop(order.uuid)
-        data = self._request(endpoint=endpoint, method="GET")
-        order.update_data(data)
+        old_status = self._update_oder_data(order, '/', "GET")
         new_status = OrderStatus(order.status.name)
         self.orders[new_status].update({order.uuid: order})
         status_changed = (old_status != new_status)
@@ -265,14 +261,18 @@ class Orders(_ApiClient):
             `True` if the order was successfully activated
 
         """
-        endpoint = f"spaces/{self._space.uuid}/orders/{order.uuid}/activate/"
-        old_status = order.status.name
-        self.orders[old_status].pop(order.uuid)
-        data = self._request(endpoint=endpoint, method="PUT")
-        order.update_data(data)
+        self._update_oder_data(order, '/activate/', "PUT")
         new_status = order.status.name
         self.orders[new_status].update({order.uuid: order})
         return new_status == 'ACTIVATED'
+
+    def _update_oder_data(self, order, arg1, method):
+        endpoint = f'spaces/{self._space.uuid}/orders/{order.uuid}{arg1}'
+        result = order.status.name
+        self.orders[result].pop(order.uuid)
+        data = self._request(endpoint=endpoint, method=method)
+        order.update_data(data)
+        return result
 
     def delete_order(self, order: Order) -> Tuple[bool, OrderStatus]:
         """
