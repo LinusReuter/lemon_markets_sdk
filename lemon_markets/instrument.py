@@ -95,14 +95,15 @@ class Instrument:
 
 
 class Instruments(_ApiClient):
-    """Class for searching instruments.
+    """
+    Class for searching instruments.
 
-        Parameters
-        ----------
-        account: Account
-          The account object
+    Parameters
+    ----------
+    account: Account
+        The account object
 
-        """
+    """
 
     def __init__(self, account: Account):       # noqa
         super().__init__(account=account, is_data=True)

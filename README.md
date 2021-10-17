@@ -1,21 +1,37 @@
 # Lemon Markets SDK
 
+[![unittester](https://github.com/LinusReuter/lemon_markets_sdk/actions/workflows/unittester.yml/badge.svg)](https://github.com/LinusReuter/lemon_markets_sdk/actions/workflows/unittester.yml)
 [![Documentation Status](https://readthedocs.org/projects/lemon_markets_sdk/badge/?version=latest)](https://lemon_markets_sdk.readthedocs.io/en/latest/?badge=latest)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/LinusReuter/lemon_markets_sdk/blob/master/docs/lemon_markets.ipynb)
 
-This is a Python SDK for accessing the Lemon Markets API.
-API documentation can be found here: https://docs.lemon.markets
 
-> Note: [lemon.markets](https://lemon.markets) is in closed beta and this SDK is a work in progress. 
-> 
-> Pull requests to expand the SDK or improve its reliability are welcome.
+This is a Python SDK for accessing the Lemon Markets API.
+API documentation can be found here: [lemon-markets-sdk.readthedocs.io](https://lemon-markets-sdk.readthedocs.io/)
+
+> [lemon.markets](https://lemon.markets) is in closed beta and this SDK is a work in progress. 
+> Pull requests to expand the SDK or improve its reliability are welcomed.
 
 ## Installation
 
+First, clone this repository to your local machine.
+
 ```
-git clone https://github.com/LinusReuter/lemon-markets-api-access.git
-python setup.py install
+git clone https://github.com/LinusReuter/lemon_markets_sdk.git
 ```
+
+Open the downloaded folder, and install the package with this command:
+
+```
+pip install .
+```
+
+Or, if you want to make changes to the package's source code (If you want to work on this repo, for example):
+
+```
+pip install . -e
+```
+
+The second option installs the package via a dynamic link, meaning your changes to the package will immediately be reflected by the program using it.
 
 
 ## Usage
@@ -110,7 +126,7 @@ timestamp_seconds_to_datetime(timestamp)  # creates an datetime object with loca
 ```python
 from lemon_markets.order import *
 
-# Initialise the Orders Class
+# Initialize the Orders Class
 orders = Orders(account=acc, space=space)
 print(orders.orders)  # see all created and retrieved orders sorted in dicts by status. 
 # the Structure of the orders.orders dict:

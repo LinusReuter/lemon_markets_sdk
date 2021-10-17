@@ -29,7 +29,7 @@ class TradingVenues(_ApiClient):
 
     def __init__(self, account: Account):       # noqa
         _account = account
-        super().__init__(account=account, is_data=True)
+        super().__init__(account=_account, is_data=True)
 
     def get_venues(self):
         """Load the list of trading venues."""
@@ -83,20 +83,20 @@ class TradingVenue(_ApiClient):  # TODO update openig checks for new AIP Strctur
 
         for data in self.opening_days:
             if day == data.get('day_iso'):
-                if timestamp_seconds_to_datetime(data.get("opening_time")) <= current_time() <= timestamp_seconds_to_datetime(
-                        data.get("closing_time")):
-                    return True
-                else:
-                    return False
+                return (
+                    timestamp_seconds_to_datetime(data.get("opening_time"))
+                    <= current_time()
+                    <= timestamp_seconds_to_datetime(data.get("closing_time"))
+                )
 
         self.update_opening_days()
         for data in self.opening_days:
             if day == data.get('day_iso'):
-                if timestamp_seconds_to_datetime(data.get("opening_time")) <= current_time() <= timestamp_seconds_to_datetime(
-                        data.get("closing_time")):
-                    return True
-                else:
-                    return False
+                return (
+                    timestamp_seconds_to_datetime(data.get("opening_time"))
+                    <= current_time()
+                    <= timestamp_seconds_to_datetime(data.get("closing_time"))
+                )
 
         return False
 
@@ -108,7 +108,7 @@ class TradingVenue(_ApiClient):  # TODO update openig checks for new AIP Strctur
         Returns
         -------
         timedelta
-            Returns the time until close. Uninitialised if not available
+            Returns the time until close. Uninitialized if not available
 
         """
         day = current_time().strftime("%Y-%m-%d")
@@ -136,7 +136,7 @@ class TradingVenue(_ApiClient):  # TODO update openig checks for new AIP Strctur
         Returns
         -------
         timedelta
-            Returns the time until open. Uninitialised if not available
+            Returns the time until open. Uninitialized if not available
 
         """
         day = current_time().strftime("%Y-%m-%d")
@@ -157,8 +157,6 @@ class TradingVenue(_ApiClient):  # TODO update openig checks for new AIP Strctur
         return timedelta()
 
     def update_opening_days(self):
-        """
-        Updates the opening_days property of the TradingVenue instances
-        """
+        """Update the opening_days property of the TradingVenue instances."""
         self.opening_days = self._request(
             endpoint=f"venues/{self.mic}/opening-days").get("results")

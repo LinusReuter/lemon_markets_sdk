@@ -1,0 +1,39 @@
+name: unittester
+
+on:
+  push:
+  schedule:
+    - cron: "0 7 * * 6"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ['3.7', '3.8', '3.9', '3.10']
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.version }}
+      - name: Install project & dependencies
+        run: |
+          pip install --upgrade pip
+          if test -f requirements.txt; then
+            echo "::group::Installing requirements.txt"
+            pip install -r requirements.txt
+            echo "::endgroup::"
+          fi
+          if test -f setup.py; then
+            echo "::group::Installing package"
+            pip install .
+            echo "::endgroup::"
+          fi
+      - name: Run unittests
+        env:
+          CLIENT_ID: ${{ secrets.TEST_CLIENT_ID }}
+          CLIENT_TOKEN: ${{ secrets.TEST_CLIENT_TOKEN }}
+        run: |
+          python -m unittest
+
