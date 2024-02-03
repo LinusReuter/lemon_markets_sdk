@@ -1,4 +1,4 @@
-# Lemon Markets SDK
+# Lemon Markets SDK / Archive no futher work planned
 
 [![unittester](https://github.com/LinusReuter/lemon_markets_sdk/actions/workflows/unittester.yml/badge.svg)](https://github.com/LinusReuter/lemon_markets_sdk/actions/workflows/unittester.yml)
 [![Documentation Status](https://readthedocs.org/projects/lemon_markets_sdk/badge/?version=latest)](https://lemon_markets_sdk.readthedocs.io/en/latest/?badge=latest)
